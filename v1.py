@@ -367,7 +367,7 @@ class MyWindow(gtk.Window):
 		for image in limage:
 			a=a+1
 			c=c+1
-			if a > 3:
+				if a > 3:
 				b=b+2
 				a=1
 			self.image2 = gtk.Image()		
