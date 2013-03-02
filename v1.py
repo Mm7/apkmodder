@@ -339,7 +339,7 @@ class MyWindow(gtk.Window):
 		c=-1
 		self.liimageob = []
 		self.lcheckbuttonob = []
-		self.diimcb = {}
+		self.diob = {}
 		for image in limage:
 			a=a+1
 			c=c+1
@@ -349,6 +349,7 @@ class MyWindow(gtk.Window):
 			self.image1 = gtk.Image()		
 			self.image1.set_from_file(tempdir+'/apkmoddertmp/'+image+'resized.png')
 			self.image1.show()
+			self.diob[image] = self.image1
 			self.table1.attach(self.image1, a-1, a, b-1, b)
 			self.liimageob.append(self.image1)
 			self.checkbutton1 = gtk.CheckButton(image) 
@@ -356,7 +357,6 @@ class MyWindow(gtk.Window):
 			self.checkbutton1.connect('clicked', self.Match, self.liimageob[c], image)
 			self.table1.attach(self.checkbutton1, a-1, a, b, b+1)	
 			self.lcheckbuttonob.append(self.checkbutton1)
-			self.diimcb[image] = self.checkbutton1
 
 	def DrawO(self, limage):		
 		a=0
@@ -364,15 +364,17 @@ class MyWindow(gtk.Window):
 		c=-1
 		self.loimageob = []
 		self.llabelob = []
+		self.doob = {}
 		for image in limage:
 			a=a+1
 			c=c+1
-				if a > 3:
+			if a > 3:
 				b=b+2
 				a=1
 			self.image2 = gtk.Image()		
 			self.image2.set_from_file(tempdir+'/apkmoddertmp/'+image+'resized.png')
 			self.image2.show()
+			self.doob[image] = self.image2
 			self.table2.attach(self.image2, a-1, a, b-1, b)
 			self.label = gtk.Label(image)
 			self.label.show()
@@ -382,9 +384,17 @@ class MyWindow(gtk.Window):
 	def Match(self, widget, image, imagename):
 		if widget.get_active():
 			if self.apko is True:
-				if any(imagename in s for s in self.loimage):
-					imname = 1		
-					print(GetImageSize(self.loimageob)[0])
+				imagebn = os.path.basename(imagename)
+				mok = False
+				for image2 in self.loimage:
+					if imagebn in image2:
+						mok = True
+						isize = GetImageSize(self.diob[imagename])
+						print(isize)
+				if mok is False:
+				  print('False')
+				#if any(imagebn in s for s in self.loimage):		
+					#print(GetImageSize(self.loimageob)[0])
 			else:
 				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "No apk theme selected")
 				md.run()
