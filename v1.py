@@ -389,8 +389,11 @@ class MyWindow(gtk.Window):
 				for image2 in self.loimage:
 					if imagebn in image2:
 						mok = True
-						isize = GetImageSize(self.diob[imagename])
-						print(isize)
+						ob = (self.diob[imagename])
+						w, h = ob.size()
+						print(w)
+						print(h)
+						#print(isize)
 				if mok is False:
 				  print('False')
 				#if any(imagebn in s for s in self.loimage):		
