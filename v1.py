@@ -415,3 +415,5 @@ class MyWindow(gtk.Window):
 win = MyWindow()
 win.show_all()
 gtk.main()
+
+test
