@@ -354,7 +354,7 @@ class MyWindow(gtk.Window):
 			self.liimageob.append(self.image1)
 			self.checkbutton1 = gtk.CheckButton(image) 
 			self.checkbutton1.show()
-			self.checkbutton1.connect('clicked', self.Match, self.liimageob[c], image)
+			self.checkbutton1.connect('clicked', self.Match, image)
 			self.table1.attach(self.checkbutton1, a-1, a, b, b+1)	
 			self.lcheckbuttonob.append(self.checkbutton1)
 
@@ -381,19 +381,15 @@ class MyWindow(gtk.Window):
 			self.table2.attach(self.label, a-1, a, b, b+1)
 			self.llabelob.append(self.label)
 
-	def Match(self, widget, image, imagename):
+	def Match(self, widget, imagen):
 		if widget.get_active():
 			if self.apko is True:
-				imagebn = os.path.basename(imagename)
+				imagebn = os.path.basename(imagen)
 				mok = False
-				for image2 in self.loimage:
-					if imagebn in image2:
-						mok = True
-						ob = (self.diob[imagename])
-						w, h = ob.size()
-						print(w)
-						print(h)
-						#print(isize)
+				for image in self.loimage:
+					if imagebn in image:
+						im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
+						print(im1.size)
 				if mok is False:
 				  print('False')
 				#if any(imagebn in s for s in self.loimage):		
