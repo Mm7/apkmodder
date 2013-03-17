@@ -56,10 +56,10 @@ def GetImageSize(image):
 	size = image.size()
 	return(size[0], size[1])
 
-def Resize(limage, dim=None):
+def Resize(limage, dim=(50, 50)):
 	for image in limage:	
 		im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
-		im2 = im1.resize((50, 50), Image.ANTIALIAS)	
+		im2 = im1.resize(dim, Image.ANTIALIAS)	
 		im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
 
 def GetZipDrawableFileName(limage, drawable):
@@ -388,8 +388,9 @@ class MyWindow(gtk.Window):
 				mok = False
 				for image in self.loimage:
 					if imagebn in image:
-						im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
-						print(im1.size)
+						im = Image.open(tempdir+'/apkmoddertmp/'+image)
+						Resize(im, im.size)
+						print('Match complete')
 				if mok is False:
 				  print('False')
 				#if any(imagebn in s for s in self.loimage):		
