@@ -48,7 +48,11 @@ try:
 except:
 	print("FATAL : Can't import shutil")
 	sys.exit(0)
-
+try:
+	import re
+except:
+	print("FATAL : Can't import re")
+	sys.exit(0)	
 
 tempdir = tempfile.gettempdir()
 
@@ -59,7 +63,7 @@ def GetImageSize(image):
 def Resize(limage, dim=(50, 50)):
 	for image in limage:	
 		im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
-		im2 = im1.resize(dim, Image.ANTIALIAS)	
+		im2 = im1.thumbnail(dim, Image.NEAREST)	
 		im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
 
 def GetZipDrawableFileName(limage, drawable):
@@ -277,13 +281,38 @@ class MyWindow(gtk.Window):
 			dialog.destroy()
 			self.apki = True
 			self.zinput = zipfile.ZipFile(self.pathi)
-			self.lifile = GetZipFileName(self.zinput)
-			self.lidrawable = GetZipDrawableName(self.lifile)			
-			for dirdrawable in self.lidrawable:
-				self.combobox1.append_text(dirdrawable)
+			self.lidir=[]
+			self.lifile=[]
+			self.limage=[]
+			for f in self.zinput.namelist():
+				if f endswith('/'):
+					self.lidir.append(f)
+				else:
+					self.lifile.append(f)
+			
+			for di in self.lidir:
+				ob = re.search(r'res/drawable-(\w+)/', di, re.M|re.I)
+				for dirdrawable in ob.groups()[0]:
+					self.combobox1.append_text(dirdrawable)
+			
+			#self.lidrawable = GetZipDrawableName(self.lifile)			
+			#for dirdrawable in self.lidrawable:
+			#	self.combobox1.append_text(dirdrawable)
 			self.table1.remove(self.image1)
-			self.liimage = GetZipImageName(self.lifile)
-			Extract(self.zinput)
+			#self.liimage = GetZipImageName(self.lifile)
+			
+			self.zinput.extractall(tempdir+'/apkmoddertmp')
+			
+			for f in self.lifile:
+				if f.endswith('.png') or f.ednswith('.jpg'):
+					self.limage.append(f)
+			
+			for image in self.limage:	
+				im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
+				im2 = im1.thumbnail(dim, Image.NEAREST)	
+				im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
+			
+			#Extract(self.zinput)
 			Resize(self.liimage)
 			lidirfname = GetZipDrawableFileName(self.liimage, self.lidrawable[0])
 			self.DrawI(lidirfname)
@@ -389,10 +418,11 @@ class MyWindow(gtk.Window):
 				for image in self.loimage:
 					if imagebn in image:
 						im = Image.open(tempdir+'/apkmoddertmp/'+image)
-						Resize(im, im.size)
+						im2 = Image.open(tempdir+'/apkmoddertmp/'+imagen)
+						Resize([image], im2.size)
 						print('Match complete')
-				if mok is False:
-				  print('False')
+				#if mok is False:
+				 # print('False')
 				#if any(imagebn in s for s in self.loimage):		
 					#print(GetImageSize(self.loimageob)[0])
 			else:
