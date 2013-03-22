@@ -290,34 +290,41 @@ class MyWindow(gtk.Window):
 			self.dimagedir={}
 			
 			self.zinput.extractall(tempdir+'/apkmoddertmp')
-			
+
 			for root, dirs, files in os.walk(tempdir+'/apkmoddertmp/res'):
-				if root == tempdir+'/apkmoddertmp/res':
-					 for rdir in dirs:
-						if re.search(r'drawable-(\w+)', rdir, re.M|re.I):
+				if (root == tempdir+'/apkmoddertmp/res'):
+					for rdir in dirs:
+						if re.search(r'drawable-\w+', rdir, re.M|re.I):
 							self.lidrawable.append(rdir)
-				
-				self.dimagedir[root] = files
+							#self.dimagedir[tempdir+'/apkmoddertmp/res/'+rdir]='Void'
+				for d in self.lidrawable:
+					if root == tempdir+'/apkmoddertmp/res/'+d:
+						self.dimagedir[root] = files
+				#self.dimagedir[root] = files
 				#self.lidir.append(dirs)
 				self.lifile = self.lifile+files
-			print(self.lifile)
+			
 			for di in self.lidrawable:
 				self.combobox1.append_text(di)
-				self.lidrawable.append(di)
+				#self.lidrawable.append(di)
 			
 			#self.lidrawable = GetZipDrawableName(self.lifile)			
 			#for dirdrawable in self.lidrawable:
 			#	self.combobox1.append_text(dirdrawable)
 			self.table1.remove(self.image1)
 			#self.liimage = GetZipImageName(self.lifile)
-			
-			
-			for f in self.lifile:
-				if f.endswith('.png'):
-					self.liimage.append(f)
-			
-			for image in self.liimage:	
-				subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!', tempdir+'/apkmoddertmp/'+image+'resized.png'])
+			for key in self.dimagedir:
+				for value in self.dimagedir[key]:
+					if os.path.splitext(value)[1] == '.png':
+						self.liimage.append(key+'/'+value)
+			#for f in self.lifile:
+			#	if os.path.splitext(f)[1] == '.png':
+			#		self.liimage.append(f)
+					
+			for key in self.dimagedir:
+				for value in self.dimagedir[key]:
+							#subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!', tempdir+'/apkmoddertmp/'+image+'resized.png'])
+					subprocess.call(['convert', key+'/'+value, '-resize', '50x50!', key+'/'+value+'resized.png'])							
 				#im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
 				#im2 = im1.thumbnail(dim, Image.NEAREST)	
 				#im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
@@ -325,8 +332,8 @@ class MyWindow(gtk.Window):
 			
 			#Extract(self.zinput)
 			#Resize(self.liimage)
-			lidirfname = GetZipDrawableFileName(self.liimage, self.lidrawable[0])
-			self.DrawI(lidirfname)
+			#lidirfname = GetZipDrawableFileName(self.liimage, self.lidrawable[0])
+			self.DrawI(self.liimage)
 
 		elif (b == 0) and (self.apki == True):		
 			md = gtk.MessageDialog(self, 
@@ -387,7 +394,7 @@ class MyWindow(gtk.Window):
 				b=b+2
 				a=1
 			self.image1 = gtk.Image()		
-			self.image1.set_from_file(tempdir+'/apkmoddertmp/'+image+'resized.png')
+			self.image1.set_from_file(image+'resized.png')
 			self.image1.show()
 			self.diob[image] = self.image1
 			self.table1.attach(self.image1, a-1, a, b-1, b)
