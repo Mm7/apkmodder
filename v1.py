@@ -237,6 +237,7 @@ class MyWindow(gtk.Window):
 			self.table1.remove(checkbutton)
 		if index:
 			ldirfname = GetZipDrawableFileName(self.liimage, model[index][0])
+			ldirfname.sort()
 			self.DrawI(ldirfname)	
 
 	def changed_cbO(self, combobox):
@@ -248,6 +249,7 @@ class MyWindow(gtk.Window):
 			self.table2.remove(label)
 		if index:
 			ldirfname = GetZipDrawableFileName(self.loimage, model[index][0])
+			ldirfname.sort()
 			self.DrawO(ldirfname)				
 
 
@@ -269,7 +271,7 @@ class MyWindow(gtk.Window):
 			self.lifile=[]
 			self.liimage=[]
 			self.lidrawable=[]
-			self.dimagedir={}
+			self.diimagedir={}
 			
 			self.zinput.extractall(tempdir+'/apkmoddertmp')
 
@@ -281,7 +283,7 @@ class MyWindow(gtk.Window):
 							#self.dimagedir[tempdir+'/apkmoddertmp/res/'+rdir]='Void'
 				for d in self.lidrawable:
 					if root == tempdir+'/apkmoddertmp/res/'+d:
-						self.dimagedir[root] = files
+						self.diimagedir[root] = files
 				#self.dimagedir[root] = files
 				#self.lidir.append(dirs)
 				self.lifile = self.lifile+files
@@ -295,22 +297,23 @@ class MyWindow(gtk.Window):
 			#	self.combobox1.append_text(dirdrawable)
 			self.table1.remove(self.image1)
 			#self.liimage = GetZipImageName(self.lifile)
-			for key in self.dimagedir:
-				for value in self.dimagedir[key]:
+			for key in self.diimagedir:
+				for value in self.diimagedir[key]:
 					if os.path.splitext(value)[1] == '.png':
 						self.liimage.append(key+'/'+value)
 			#for f in self.lifile:
 			#	if os.path.splitext(f)[1] == '.png':
 			#		self.liimage.append(f)
 					
-			for key in self.dimagedir:
-				for value in self.dimagedir[key]:
+			for key in self.diimagedir:
+				for value in self.diimagedir[key]:
 					#subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!', tempdir+'/apkmoddertmp/'+image+'resized.png'])
-					subprocess.call(['convert', key+'/'+value, '-resize', '50x50!', key+'/'+value+'resized.png'])	
+					subprocess.call(['convert', key+'/'+value, '-resize', '50x50', key+'/'+value+'resized.png'])	
 			
 			limagestart=[]
-			for value in self.dimagedir[tempdir+'/apkmoddertmp/res/'+self.lidrawable[0]]:
+			for value in self.diimagedir[tempdir+'/apkmoddertmp/res/'+self.lidrawable[0]]:
 				limagestart.append(tempdir+'/apkmoddertmp/res/'+self.lidrawable[0]+'/'+value)
+				limagestart.sort()
 				#im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
 				#im2 = im1.thumbnail(dim, Image.NEAREST)	
 				#im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
@@ -339,16 +342,61 @@ class MyWindow(gtk.Window):
 			dialog.destroy()
 			self.apko = True
 			self.zoutput = zipfile.ZipFile(self.patho)
-			self.lofile = GetZipFileName(self.zoutput)
-			self.lodrawable = GetZipDrawableName(self.lofile)		
-			for dirdrawable in self.lodrawable:
-				self.combobox2.append_text(dirdrawable)
+			self.lodir=[]
+			self.lofile=[]
+			self.loimage=[]
+			self.lodrawable=[]
+			self.doimagedir={}
+			
+			self.zoutput.extractall(tempdir+'/apkmodder-theme')
+
+			for root, dirs, files in os.walk(tempdir+'/apkmodder-theme/res'):
+				if (root == tempdir+'/apkmodder-theme/res'):
+					for rdir in dirs:
+						if re.search(r'drawable-\w+', rdir, re.M|re.I):
+							self.lodrawable.append(rdir)
+							#self.dimagedir[tempdir+'/apkmoddertmp/res/'+rdir]='Void'
+				for d in self.lodrawable:
+					if root == tempdir+'/apkmodder-theme/res/'+d:
+						self.doimagedir[root] = files
+				#self.doimagedir[root] = files
+				#self.lidir.append(dirs)
+				self.lofile = self.lofile+files
+			
+			for di in self.lodrawable:
+				self.combobox2.append_text(di)
+				#self.lidrawable.append(di)
+			
+			#self.lidrawable = GetZipDrawableName(self.lifile)			
+			#for dirdrawable in self.lidrawable:
+			#	self.combobox1.append_text(dirdrawable)
 			self.table2.remove(self.image2)
-			self.loimage = GetZipImageName(self.lofile)
-			Extract(self.zoutput)
-			Resize(self.loimage)
-			lodirfname = GetZipDrawableFileName(self.loimage, self.lodrawable[0])
-			self.DrawO(self.loimage)
+			#self.liimage = GetZipImageName(self.lifile)
+			for key in self.doimagedir:
+				for value in self.doimagedir[key]:
+					if os.path.splitext(value)[1] == '.png':
+						self.loimage.append(key+'/'+value)
+			#for f in self.lifile:
+			#	if os.path.splitext(f)[1] == '.png':
+			#		self.liimage.append(f)
+					
+			for key in self.doimagedir:
+				for value in self.doimagedir[key]:
+					#subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!', tempdir+'/apkmoddertmp/'+image+'resized.png'])
+					subprocess.call(['convert', key+'/'+value, '-resize', '50x50', key+'/'+value+'resized.png'])	
+			
+			limagestart=[]
+			for value in self.doimagedir[tempdir+'/apkmodder-theme/res/'+self.lodrawable[0]]:
+				limagestart.append(tempdir+'/apkmodder-theme/res/'+self.lodrawable[0]+'/'+value)
+				limagestart.sort()
+				#im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
+				#im2 = im1.thumbnail(dim, Image.NEAREST)	
+				#im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
+			#print(self.lidrawable)
+			#Extract(self.zinput)
+			#Resize(self.liimage)
+			#lidirfname = GetZipDrawableFileName(self.liimage, self.lidrawable[0])
+			self.DrawO(limagestart)
 
 		elif (b == 1) and (self.apko == True):
 			md = gtk.MessageDialog(self, 
@@ -384,7 +432,7 @@ class MyWindow(gtk.Window):
 			self.diob[image] = self.image1
 			self.table1.attach(self.image1, a-1, a, b-1, b)
 			self.liimageob.append(self.image1)
-			self.checkbutton1 = gtk.CheckButton(image) 
+			self.checkbutton1 = gtk.CheckButton(os.path.basename(image)) 
 			self.checkbutton1.show()
 			self.checkbutton1.connect('clicked', self.Match, image)
 			self.table1.attach(self.checkbutton1, a-1, a, b, b+1)	
@@ -408,7 +456,7 @@ class MyWindow(gtk.Window):
 			self.image2.show()
 			self.doob[image] = self.image2
 			self.table2.attach(self.image2, a-1, a, b-1, b)
-			self.label = gtk.Label(image)
+			self.label = gtk.Label(os.path.basename(image))
 			self.label.show()
 			self.table2.attach(self.label, a-1, a, b, b+1)
 			self.llabelob.append(self.label)
