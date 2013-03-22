@@ -226,7 +226,7 @@ class MyWindow(gtk.Window):
 	def Close(self, b, c):
 		if os.path.exists(tempdir+'/apkmodder-theme'):
 			shutil.rmtree(tempdir+'/apkmodder-theme')
-		if os.path.exists(tempdir+'/apkmodder-mod')
+		if os.path.exists(tempdir+'/apkmodder-mod'):
 			shutil.rmtree(tempdir+'/apkmodder-mod')
 		gtk.main_quit()
 
@@ -307,10 +307,11 @@ class MyWindow(gtk.Window):
 			#	if os.path.splitext(f)[1] == '.png':
 			#		self.liimage.append(f)
 					
-			for key in self.diimagedir:
-				for value in self.diimagedir[key]:
+			#for key in self.diimagedir:
+			#	for value in self.diimagedir[key]:
 					#subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!', tempdir+'/apkmoddertmp/'+image+'resized.png'])
-					subprocess.call(['convert', key+'/'+value, '-resize', '50x50', key+'/'+value+'resized.png'])	
+			for image in self.liimage:
+				subprocess.call(['convert',image, '-resize', '50x50', image+'resized.png'])	
 			
 			limagestart=[]
 			for value in self.diimagedir[tempdir+'/apkmodder-mod/res/'+self.lidrawable[0]]:
@@ -378,15 +379,15 @@ class MyWindow(gtk.Window):
 				for value in self.doimagedir[key]:
 					if os.path.splitext(value)[1] == '.png':
 						self.loimage.append(key+'/'+value)
-			print(self.loimage)
 			#for f in self.lifile:
 			#	if os.path.splitext(f)[1] == '.png':
 			#		self.liimage.append(f)
 					
-			for key in self.doimagedir:
-				for value in self.doimagedir[key]:
+			#for key in self.doimagedir:
+			#	for value in self.doimagedir[key]:
 					#subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!', tempdir+'/apkmoddertmp/'+image+'resized.png'])
-					subprocess.call(['convert', key+'/'+value, '-resize', '50x50', key+'/'+value+'resized.png'])	
+			for image in self.loimage:
+				subprocess.call(['convert', image, '-resize', '50x50', image+'resized.png'])	
 			
 			limagestart=[]
 			for value in self.doimagedir[tempdir+'/apkmodder-theme/res/'+self.lodrawable[0]]:
