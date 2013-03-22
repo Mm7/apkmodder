@@ -273,16 +273,16 @@ class MyWindow(gtk.Window):
 			self.lidrawable=[]
 			self.diimagedir={}
 			
-			self.zinput.extractall(tempdir+'/apkmoddertmp')
+			self.zinput.extractall(tempdir+'/apkmodder-mod')
 
-			for root, dirs, files in os.walk(tempdir+'/apkmoddertmp/res'):
-				if (root == tempdir+'/apkmoddertmp/res'):
+			for root, dirs, files in os.walk(tempdir+'/apkmodder-mod/res'):
+				if (root == tempdir+'/apkmodder-mod/res'):
 					for rdir in dirs:
 						if re.search(r'drawable-\w+', rdir, re.M|re.I):
 							self.lidrawable.append(rdir)
 							#self.dimagedir[tempdir+'/apkmoddertmp/res/'+rdir]='Void'
 				for d in self.lidrawable:
-					if root == tempdir+'/apkmoddertmp/res/'+d:
+					if root == tempdir+'/apkmodder-mod/res/'+d:
 						self.diimagedir[root] = files
 				#self.dimagedir[root] = files
 				#self.lidir.append(dirs)
@@ -311,8 +311,8 @@ class MyWindow(gtk.Window):
 					subprocess.call(['convert', key+'/'+value, '-resize', '50x50', key+'/'+value+'resized.png'])	
 			
 			limagestart=[]
-			for value in self.diimagedir[tempdir+'/apkmoddertmp/res/'+self.lidrawable[0]]:
-				limagestart.append(tempdir+'/apkmoddertmp/res/'+self.lidrawable[0]+'/'+value)
+			for value in self.diimagedir[tempdir+'/apkmodder-mod/res/'+self.lidrawable[0]]:
+				limagestart.append(tempdir+'/apkmodder-mod/res/'+self.lidrawable[0]+'/'+value)
 				limagestart.sort()
 				#im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
 				#im2 = im1.thumbnail(dim, Image.NEAREST)	
