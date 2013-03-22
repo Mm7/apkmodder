@@ -1,17 +1,12 @@
+#!/usr/bin/python
+
 #  
 #  Welcome to MM7 Android Application Modder
 #
 
-print('--------------------------------------------------------------')
 print('')
-print('APK MODDER BY')
-print('_   _  _    _ __')
-print('|\  /| |\  /|  /')
-print('| \/ | | \/ | / ')
+print('APK MODDER')
 print('')
-print('--------------------------------------------------------------')
-
-print('WARNING: ALPHA STAGE. MANY BUGS')
 
 try:
 	import sys
@@ -52,11 +47,18 @@ try:
 	import re
 except:
 	print("FATAL : Can't import re")
-	sys.exit(0)	
+	sys.exit(0)
+try:
+	import subprocess
+except:
+	print("FATAL : Can't import subprocess")
+	sys.exit(0)
+
 
 tempdir = tempfile.gettempdir()
 
-def GetImageSize(image):
+def GetImageSize(path):
+	image = Image.open(path)
 	size = image.size()
 	return(size[0], size[1])
 
@@ -283,17 +285,25 @@ class MyWindow(gtk.Window):
 			self.zinput = zipfile.ZipFile(self.pathi)
 			self.lidir=[]
 			self.lifile=[]
-			self.limage=[]
-			for f in self.zinput.namelist():
-				if f endswith('/'):
-					self.lidir.append(f)
-				else:
-					self.lifile.append(f)
+			self.liimage=[]
+			self.lidrawable=[]
+			self.dimagedir={}
 			
-			for di in self.lidir:
-				ob = re.search(r'res/drawable-(\w+)/', di, re.M|re.I)
-				for dirdrawable in ob.groups()[0]:
-					self.combobox1.append_text(dirdrawable)
+			self.zinput.extractall(tempdir+'/apkmoddertmp')
+			
+			for root, dirs, files in os.walk(tempdir+'/apkmoddertmp/res'):
+				if root == tempdir+'/apkmoddertmp/res':
+					 for rdir in dirs:
+						if re.search(r'drawable-(\w+)', rdir, re.M|re.I):
+							self.lidrawable.append(rdir)
+				
+				self.dimagedir[root] = files
+				#self.lidir.append(dirs)
+				self.lifile = self.lifile+files
+			print(self.lifile)
+			for di in self.lidrawable:
+				self.combobox1.append_text(di)
+				self.lidrawable.append(di)
 			
 			#self.lidrawable = GetZipDrawableName(self.lifile)			
 			#for dirdrawable in self.lidrawable:
@@ -301,19 +311,20 @@ class MyWindow(gtk.Window):
 			self.table1.remove(self.image1)
 			#self.liimage = GetZipImageName(self.lifile)
 			
-			self.zinput.extractall(tempdir+'/apkmoddertmp')
 			
 			for f in self.lifile:
-				if f.endswith('.png') or f.ednswith('.jpg'):
-					self.limage.append(f)
+				if f.endswith('.png'):
+					self.liimage.append(f)
 			
-			for image in self.limage:	
-				im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
-				im2 = im1.thumbnail(dim, Image.NEAREST)	
-				im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
+			for image in self.liimage:	
+				subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!', tempdir+'/apkmoddertmp/'+image+'resized.png'])
+				#im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
+				#im2 = im1.thumbnail(dim, Image.NEAREST)	
+				#im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
+			#print(self.lidrawable)
 			
 			#Extract(self.zinput)
-			Resize(self.liimage)
+			#Resize(self.liimage)
 			lidirfname = GetZipDrawableFileName(self.liimage, self.lidrawable[0])
 			self.DrawI(lidirfname)
 
