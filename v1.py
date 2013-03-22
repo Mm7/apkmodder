@@ -121,7 +121,7 @@ class MyWindow(gtk.Window):
     	mod, gtk.ACCEL_VISIBLE)
 		filemenu.append(newi)
 
-		openi = gtk.MenuItem(label = 'Open input apk')
+		openi = gtk.MenuItem(label = 'Open mod apk')
 		key, mod = gtk.accelerator_parse("<Control>I")
 		openi.add_accelerator("activate", agr, key, 
     	mod, gtk.ACCEL_VISIBLE)
@@ -129,7 +129,7 @@ class MyWindow(gtk.Window):
 
 		filemenu.append(openi)
 
-		openm = gtk.MenuItem(label = 'Open output apk')
+		openm = gtk.MenuItem(label = 'Open theme apk')
 		key, mod = gtk.accelerator_parse("<Control>O")
 		openm.add_accelerator("activate", agr, key, 
     	mod, gtk.ACCEL_VISIBLE)
@@ -181,7 +181,7 @@ class MyWindow(gtk.Window):
 		self.table1 = gtk.Table(2, 2, True)
 
 		self.image1 = gtk.Image()
-		self.image1.set_from_file("/home/marco/workspace/img.png")	
+		self.image1.set_from_file("img.png")	
 		self.image1.show()
 
 		self.table1.attach(self.image1, 0, 2, 0, 2)
@@ -196,7 +196,7 @@ class MyWindow(gtk.Window):
 		self.table2 = gtk.Table(2, 2, False)
 
 		self.image2 = gtk.Image()
-		self.image2.set_from_file("/home/marco/workspace/img.png")	
+		self.image2.set_from_file("img.png")	
 		self.image2.show()
 		
 		self.table2.attach(self.image2, 0, 2, 0, 2)
@@ -224,8 +224,10 @@ class MyWindow(gtk.Window):
 		self.connect("delete-event", self.Close)
 
 	def Close(self, b, c):
-		if os.path.exists(tempdir+'/apkmoddertmp'):
-			shutil.rmtree(tempdir+'/apkmoddertmp')
+		if os.path.exists(tempdir+'/apkmodder-theme'):
+			shutil.rmtree(tempdir+'/apkmodder-theme')
+		if os.path.exists(tempdir+'/apkmodder-mod')
+			shutil.rmtree(tempdir+'/apkmodder-mod')
 		gtk.main_quit()
 
 	def changed_cbI(self, combobox):
@@ -376,6 +378,7 @@ class MyWindow(gtk.Window):
 				for value in self.doimagedir[key]:
 					if os.path.splitext(value)[1] == '.png':
 						self.loimage.append(key+'/'+value)
+			print(self.loimage)
 			#for f in self.lifile:
 			#	if os.path.splitext(f)[1] == '.png':
 			#		self.liimage.append(f)
