@@ -62,11 +62,6 @@ def GetImageSize(path):
 	size = image.size()
 	return(size[0], size[1])
 
-def Resize(limage, dim=(50, 50)):
-	for image in limage:	
-		im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
-		im2 = im1.thumbnail(dim, Image.NEAREST)	
-		im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
 
 def GetZipDrawableFileName(limage, drawable):
 	limageindir	= []
@@ -75,14 +70,14 @@ def GetZipDrawableFileName(limage, drawable):
 			limageindir.append(image)
 	return(limageindir)
 
-def GetZipFileName(zz):
-	lfile = []
-	for zfile in zz.namelist():
-		if zfile.endswith('/'):
-			continue
-		else:
-			lfile.append(zfile)
-	return(lfile)
+#def GetZipFileName(zz):
+#	lfile = []
+#	for zfile in zz.namelist():
+#		if zfile.endswith('/'):
+#			continue
+#		else:
+#			lfile.append(zfile)
+#	return(lfile)
 
 def GetZipDrawableName(lfile):
 	ldrawable = []	
