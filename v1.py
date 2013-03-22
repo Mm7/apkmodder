@@ -62,22 +62,12 @@ def GetImageSize(path):
 	size = image.size()
 	return(size[0], size[1])
 
-
 def GetZipDrawableFileName(limage, drawable):
 	limageindir	= []
 	for image in limage:
 		if drawable in image:
 			limageindir.append(image)
 	return(limageindir)
-
-#def GetZipFileName(zz):
-#	lfile = []
-#	for zfile in zz.namelist():
-#		if zfile.endswith('/'):
-#			continue
-#		else:
-#			lfile.append(zfile)
-#	return(lfile)
 
 def GetZipDrawableName(lfile):
 	ldrawable = []	
@@ -102,9 +92,6 @@ def ZipWrite(zz, filepath, directory=None):
 		zz.write(filepath, directory+'/'+(os.path.basename(filepath)))		
 	else:	
 		zz.write(os.path.basename(filepath))
-
-def Extract(zz):
-	zz.extractall(tempdir+'/apkmoddertmp')
 
 class MyWindow(gtk.Window):
 
@@ -318,17 +305,20 @@ class MyWindow(gtk.Window):
 					
 			for key in self.dimagedir:
 				for value in self.dimagedir[key]:
-							#subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!', tempdir+'/apkmoddertmp/'+image+'resized.png'])
-					subprocess.call(['convert', key+'/'+value, '-resize', '50x50!', key+'/'+value+'resized.png'])							
+					#subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!', tempdir+'/apkmoddertmp/'+image+'resized.png'])
+					subprocess.call(['convert', key+'/'+value, '-resize', '50x50!', key+'/'+value+'resized.png'])	
+			
+			limagestart=[]
+			for value in self.dimagedir[tempdir+'/apkmoddertmp/res/'+self.lidrawable[0]]:
+				limagestart.append(tempdir+'/apkmoddertmp/res/'+self.lidrawable[0]+'/'+value)
 				#im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
 				#im2 = im1.thumbnail(dim, Image.NEAREST)	
 				#im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
 			#print(self.lidrawable)
-			
 			#Extract(self.zinput)
 			#Resize(self.liimage)
 			#lidirfname = GetZipDrawableFileName(self.liimage, self.lidrawable[0])
-			self.DrawI(self.liimage)
+			self.DrawI(limagestart)
 
 		elif (b == 0) and (self.apki == True):		
 			md = gtk.MessageDialog(self, 
@@ -358,7 +348,7 @@ class MyWindow(gtk.Window):
 			Extract(self.zoutput)
 			Resize(self.loimage)
 			lodirfname = GetZipDrawableFileName(self.loimage, self.lodrawable[0])
-			self.DrawO(lodirfname)
+			self.DrawO(self.loimage)
 
 		elif (b == 1) and (self.apko == True):
 			md = gtk.MessageDialog(self, 
@@ -414,7 +404,7 @@ class MyWindow(gtk.Window):
 				b=b+2
 				a=1
 			self.image2 = gtk.Image()		
-			self.image2.set_from_file(tempdir+'/apkmoddertmp/'+image+'resized.png')
+			self.image2.set_from_file(image+'resized.png')
 			self.image2.show()
 			self.doob[image] = self.image2
 			self.table2.attach(self.image2, a-1, a, b-1, b)
