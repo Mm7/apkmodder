@@ -59,8 +59,8 @@ tempdir = tempfile.gettempdir()
 
 def GetImageSize(path):
 	image = Image.open(path)
-	size = image.size()
-	return(size[0], size[1])
+	x, y = image.size
+	return(x, y)
 
 def GetZipDrawableFileName(limage, drawable):
 	limageindir	= []
@@ -250,9 +250,15 @@ class MyWindow(gtk.Window):
 		for label in self.llabelob:
 			self.table2.remove(label)
 		if index:
-			ldirfname = GetZipDrawableFileName(self.loimage, model[index][0])
-			ldirfname.sort()
-			self.DrawO(ldirfname)				
+			
+			limage=self.doimagedir[tempdir+'/apkmodder-theme/res/'+model[index][0]]
+			lpass=[]
+			for image in limage:
+				lpass.append(tempdir+'/apkmodder-theme/res/'+model[index][0]+'/'+image)
+				lpass.sort()
+			#ldirfname = GetZipDrawableFileName(self.loimage, model[index][0])
+			#ldirfname.sort()
+			self.DrawO(lpass)				
 
 
 	def OnOpen(self, a, b):
@@ -278,7 +284,7 @@ class MyWindow(gtk.Window):
 			self.zinput.extractall(tempdir+'/apkmodder-mod')
 
 			for root, dirs, files in os.walk(tempdir+'/apkmodder-mod/res'):
-				if (root == tempdir+'/apkmodder-mod/res'):
+				if root == tempdir+'/apkmodder-mod/res':
 					for rdir in dirs:
 						if re.search(r'drawable-\w+', rdir, re.M|re.I):
 							self.lidrawable.append(rdir)
@@ -442,7 +448,7 @@ class MyWindow(gtk.Window):
 			self.table1.attach(self.checkbutton1, a-1, a, b, b+1)	
 			self.lcheckbuttonob.append(self.checkbutton1)
 
-	def DrawO(self, limage):		
+	def DrawO(self, limage):
 		a=0
 		b=1
 		c=-1
@@ -458,6 +464,7 @@ class MyWindow(gtk.Window):
 			self.image2 = gtk.Image()		
 			self.image2.set_from_file(image+'resized.png')
 			self.image2.show()
+			self.loimageob.append(self.image2)
 			self.doob[image] = self.image2
 			self.table2.attach(self.image2, a-1, a, b-1, b)
 			self.label = gtk.Label(os.path.basename(image))
@@ -468,12 +475,10 @@ class MyWindow(gtk.Window):
 	def Match(self, widget, imagen):
 		if widget.get_active():
 			if self.apko is True:
-				imagebn = os.path.basename(imagen)
-				mok = False
 				for image in self.loimage:
-					if imagebn in image:
-						im = Image.open(tempdir+'/apkmoddertmp/'+image)
-						im2 = Image.open(tempdir+'/apkmoddertmp/'+imagen)
+					if os.path.basename(imagen) in image:
+						size=GetImageSize(image)
+						print(size)
 						Resize([image], im2.size)
 						print('Match complete')
 				#if mok is False:
