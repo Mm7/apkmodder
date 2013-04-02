@@ -246,7 +246,6 @@ class MyWindow(gtk.Window):
 			for image in limage:
 				lpass.append(tempdir+'/apkmodder-mod/res/'+model[index][0]+'/'+image)
 			lpass.sort()
-			print(lpass)
 		#if index:
 		#	ldirfname = GetZipDrawableFileName(self.liimage, model[index][0])
 		#	ldirfname.sort()
