@@ -217,6 +217,9 @@ class MyWindow(gtk.Window):
 		hbox3.pack_end(button1, False, False, 0)		
 		hbox3.pack_end(button2, False, False, 0)
 
+		button1.connect("clicked", self.OnButton1)
+		button2.connect("clicked", self.OnButton2)
+		
 		vbox.pack_start(hbox3, False, False, 0)
 
 		self.add(vbox)
@@ -238,9 +241,15 @@ class MyWindow(gtk.Window):
 		for checkbutton in self.lcheckbuttonob:
 			self.table1.remove(checkbutton)
 		if index:
-			ldirfname = GetZipDrawableFileName(self.liimage, model[index][0])
-			ldirfname.sort()
-			self.DrawI(ldirfname)	
+			limage=self.dimagedir[tempdir+'/apkmodder-mod/res/'+model[index][0]]
+			lpass=[]
+			for image in limage:
+				lpass.append(tempdir+'/apkmodder-mod/res/'+model[index][0]+'/'+image)
+				lpass.sort
+		#if index:
+		#	ldirfname = GetZipDrawableFileName(self.liimage, model[index][0])
+		#	ldirfname.sort()
+		#	self.DrawI(ldirfname)	
 
 	def changed_cbO(self, combobox):
 		model = combobox.get_model()	
@@ -473,24 +482,39 @@ class MyWindow(gtk.Window):
 			self.llabelob.append(self.label)
 
 	def Match(self, widget, imagen):
+		self.dmatch={}
+		self.dsize={}
 		if widget.get_active():
 			if self.apko is True:
 				for image in self.loimage:
 					if os.path.basename(imagen) in image:
-						size=GetImageSize(image)
-						print(size)
-						Resize([image], im2.size)
+						size=GetImageSize(imagen)
+						#print(image)
+						#print(imagen)
+						#print(size)
+						self.dmatch[image]=imagen
+						self.dsize[image]=size
 						print('Match complete')
 				#if mok is False:
 				 # print('False')
 				#if any(imagebn in s for s in self.loimage):		
 					#print(GetImageSize(self.loimageob)[0])
+				print(self.dmatch, self.dsize)
 			else:
 				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "No apk theme selected")
 				md.run()
 				md.destroy()
 				widget.set_active(False)
-			
+	def OnButton1(self, widget):
+		if self.dmatch and self.dsize:
+			for key in self.dsize:
+				ob = re.search(tempdir+'/apkmodder-theme/res/(\w+)', self.dmatch[key], re.M|re.I)
+				print(self.dmatch[key])
+				print(ob.group(1))
+				#subprocess.call(['convert', key, '-resize', self.dsize[key], tempdir+'/apkmodder-match'])
+	def OnButton2(self):
+		self.dmatch={}
+		self.dsize={}
 
 
 #zz = zipfile.ZipFile('/home/marco/workspace/Nfc.zip', 'a')
