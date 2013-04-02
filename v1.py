@@ -402,7 +402,7 @@ class MyWindow(gtk.Window):
 					
 			#for key in self.doimagedir:
 			#	for value in self.doimagedir[key]:
-					#subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!', tempdir+'/apkmoddertmp/'+image+'resized.png'])
+					#subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!',tempdir+'/apkmoddertmp/'+image+'resized.png'])
 			for image in self.loimage:
 				subprocess.call(['convert', image, '-resize', '50x50', image+'resized.png'])	
 			
