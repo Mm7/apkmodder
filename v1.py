@@ -231,6 +231,8 @@ class MyWindow(gtk.Window):
 			shutil.rmtree(tempdir+'/apkmodder-theme')
 		if os.path.exists(tempdir+'/apkmodder-mod'):
 			shutil.rmtree(tempdir+'/apkmodder-mod')
+		if os.path.exists(tempdir+'/apkmodder-match'):
+			shutil.rmtree(tempdir+'/apkmodder-match')
 		gtk.main_quit()
 
 	def changed_cbI(self, combobox):
@@ -487,7 +489,7 @@ class MyWindow(gtk.Window):
 		if widget.get_active():
 			if self.apko is True:
 				for image in self.loimage:
-					if os.path.basename(imagen) in image:
+					if os.path.basename(imagen) in image+'resize.png':
 						size=GetImageSize(imagen)
 						#print(image)
 						#print(imagen)
@@ -508,10 +510,15 @@ class MyWindow(gtk.Window):
 	def OnButton1(self, widget):
 		if self.dmatch and self.dsize:
 			for key in self.dsize:
-				ob = re.search(tempdir+'/apkmodder-theme/res/(\w+)', self.dmatch[key], re.M|re.I)
+				ob = re.search(tempdir+'/apkmodder-mod/res/(.+)', self.dmatch[key], re.M|re.I)
 				print(self.dmatch[key])
 				print(ob.group(1))
-				#subprocess.call(['convert', key, '-resize', self.dsize[key], tempdir+'/apkmodder-match'])
+				print(key)
+				if not os.path.exists(tempdir+'/apkmodder-match/'+os.path.dirname(ob.group(1))):
+					os.makedirs(tempdir+'/apkmodder-match/'+os.path.dirname(ob.group(1)))
+				subprocess.call(['convert', key, '-resize', str(self.dsize[key][0])+'x'+str(self.dsize[key][1]), tempdir+'/apkmodder-match/'+ob.group(1)])
+				self.zinput.write(tempdir+'/apkmodder-match/'+ob.group(1), res+'/'+ob.group(1))
+			self.zinput.close()
 	def OnButton2(self):
 		self.dmatch={}
 		self.dsize={}
