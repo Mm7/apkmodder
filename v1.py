@@ -241,15 +241,16 @@ class MyWindow(gtk.Window):
 		for checkbutton in self.lcheckbuttonob:
 			self.table1.remove(checkbutton)
 		if index:
-			limage=self.dimagedir[tempdir+'/apkmodder-mod/res/'+model[index][0]]
+			limage=self.diimagedir[tempdir+'/apkmodder-mod/res/'+model[index][0]]
 			lpass=[]
 			for image in limage:
 				lpass.append(tempdir+'/apkmodder-mod/res/'+model[index][0]+'/'+image)
-				lpass.sort
+			lpass.sort
+				
 		#if index:
 		#	ldirfname = GetZipDrawableFileName(self.liimage, model[index][0])
 		#	ldirfname.sort()
-		#	self.DrawI(ldirfname)	
+			self.DrawI(lpass)	
 
 	def changed_cbO(self, combobox):
 		model = combobox.get_model()	
@@ -264,7 +265,7 @@ class MyWindow(gtk.Window):
 			lpass=[]
 			for image in limage:
 				lpass.append(tempdir+'/apkmodder-theme/res/'+model[index][0]+'/'+image)
-				lpass.sort()
+			lpass.sort()
 			#ldirfname = GetZipDrawableFileName(self.loimage, model[index][0])
 			#ldirfname.sort()
 			self.DrawO(lpass)				
