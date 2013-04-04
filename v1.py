@@ -269,7 +269,13 @@ class MyWindow(gtk.Window):
 			lpass.sort()
 			#ldirfname = GetZipDrawableFileName(self.loimage, model[index][0])
 			#ldirfname.sort()
-			self.DrawO(lpass)				
+			self.DrawO(lpass)
+			
+	def rtoggled(self, widget, number):
+		if widget.get_active():
+			print('OK'+str(number))
+		else:
+			print('No'+str(number))
 
 
 	def OnOpen(self, a, b):
@@ -285,7 +291,7 @@ class MyWindow(gtk.Window):
 			self.pathi = dialog.get_filename()
 			dialog.destroy()
 			self.apki = True
-			self.zinput = zipfile.ZipFile(self.pathi)
+			self.zinput = zipfile.ZipFile(self.pathi, 'a')
 			self.lidir=[]
 			self.lifile=[]
 			self.liimage=[]
@@ -484,8 +490,10 @@ class MyWindow(gtk.Window):
 			self.llabelob.append(self.label)
 
 	def Match(self, widget, imagen):
-		self.dmatch={}
-		self.dsize={}
+		if not hasattr(self, 'dmatch'):  
+			self.dmatch={}
+		if not hasattr(self, 'dsize'):
+			self.dsize={}
 		if widget.get_active():
 			if self.apko is True:
 				for image in self.loimage:
@@ -501,6 +509,39 @@ class MyWindow(gtk.Window):
 				 # print('False')
 				#if any(imagebn in s for s in self.loimage):		
 					#print(GetImageSize(self.loimageob)[0])
+				if len(self.dmatch) > 1:
+					self.choosedialog = gtk.Window(gtk.WINDOW_TOPLEVEL)
+					self.choosedialog.connect("destroy", lambda w: gtk.main_quit())
+
+					self.choosedialog.set_title('Multi-match')
+					self.choosedialog.set_border_width(15)
+
+					self.vbox = gtk.VBox(True, 10)
+
+					frame = gtk.Frame('Multi Match')
+					label2 = gtk.Label('There are '+str(len(self.dmatch))+' matches for the selected .png. Select the .png you want port')
+
+					self.vbox.pack_start(label2, 10)
+
+					
+					radio = gtk.RadioButton(None, 'Radio Button 1 XD')
+					radio.connect('toggled', self.rtoggled, 1)
+					radio.set_active(True)
+
+					self.vbox.pack_start(radio, True, True, 0)
+					radio.show()
+  
+					radio = gtk.RadioButton(radio, 'Radio button 2')
+					radio.connect('toggled', self.rtoggled, 2)
+					radio.set_active(False)
+
+					self.vbox.pack_start(radio, True, True, 0)
+					radio.show()
+
+					frame.add(self.vbox)
+					self.choosedialog.add(frame)
+
+					self.choosedialog.show_all ()
 				print(self.dmatch, self.dsize)
 			else:
 				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "No apk theme selected")
@@ -517,7 +558,7 @@ class MyWindow(gtk.Window):
 				if not os.path.exists(tempdir+'/apkmodder-match/'+os.path.dirname(ob.group(1))):
 					os.makedirs(tempdir+'/apkmodder-match/'+os.path.dirname(ob.group(1)))
 				subprocess.call(['convert', key, '-resize', str(self.dsize[key][0])+'x'+str(self.dsize[key][1]), tempdir+'/apkmodder-match/'+ob.group(1)])
-				self.zinput.write(tempdir+'/apkmodder-match/'+ob.group(1), res+'/'+ob.group(1))
+				self.zinput.write(tempdir+'/apkmodder-match/'+ob.group(1), 'res/'+ob.group(1))
 			self.zinput.close()
 	def OnButton2(self):
 		self.dmatch={}
