@@ -585,6 +585,7 @@ class MyWindow(gtk.Window):
 			self.dmatch[self.target]=self.imagen
 			self.dsize[self.target]=GetImageSize(self.imagen)
 			window.destroy()
+			
 			print(self.dmatch, self.dsize)
 
 #zz = zipfile.ZipFile('/home/marco/workspace/Nfc.zip', 'a')
