@@ -271,11 +271,9 @@ class MyWindow(gtk.Window):
 			#ldirfname.sort()
 			self.DrawO(lpass)
 			
-	def rtoggled(self, widget, number):
+	def rtoggled(self, widget):
 		if widget.get_active():
-			print('OK'+str(number))
-		else:
-			print('No'+str(number))
+			self.target = widget.get_label()
 
 
 	def OnOpen(self, a, b):
@@ -490,64 +488,82 @@ class MyWindow(gtk.Window):
 			self.llabelob.append(self.label)
 
 	def Match(self, widget, imagen):
-		if not hasattr(self, 'dmatch'):  
-			self.dmatch={}
-		if not hasattr(self, 'dsize'):
-			self.dsize={}
+	  
 		if widget.get_active():
+			
 			if self.apko is True:
+				if not hasattr(self, 'dmatch'):  
+					self.dmatch={}
+				if not hasattr(self, 'dsize'):
+					self.dsize={} 
+			
+				localdmatch = {}
+				localdsize = {}
+
 				for image in self.loimage:
 					if os.path.basename(imagen) in image+'resize.png':
 						size=GetImageSize(imagen)
 						#print(image)
 						#print(imagen)
 						#print(size)
-						self.dmatch[image]=imagen
-						self.dsize[image]=size
+						localdmatch[image]=imagen
+						localdsize[image]=size
+
 						print('Match complete')
+						
+				if len(localdmatch) == 1:
+					self.dmatch = dict(self.dmatch.items() + localdmatch.items())
+					self.dsize = dict(self.dsize.items() + localdsize.items())
 				#if mok is False:
 				 # print('False')
 				#if any(imagebn in s for s in self.loimage):		
 					#print(GetImageSize(self.loimageob)[0])
-				if len(self.dmatch) > 1:
+				elif len(localdmatch) > 1:
+					self.target=''
+					self.imagen=imagen
+					
 					self.choosedialog = gtk.Window(gtk.WINDOW_TOPLEVEL)
-					self.choosedialog.connect("destroy", lambda w: gtk.main_quit())
+					#self.choosedialog.connect("destroy", lambda w: gtk.main_quit())
 
 					self.choosedialog.set_title('Multi-match')
 					self.choosedialog.set_border_width(15)
 
-					self.vbox = gtk.VBox(True, 10)
+					self.vbox2 = gtk.VBox(True, 10)
 
 					frame = gtk.Frame('Multi Match')
-					label2 = gtk.Label('There are '+str(len(self.dmatch))+' matches for the selected .png. Select the .png you want port')
+					label2 = gtk.Label('There are '+str(len(localdmatch))+' matches for the selected .png. Select the .png you want port')
 
-					self.vbox.pack_start(label2, 10)
+					self.vbox2.pack_start(label2, 10)
 
+					first = True
+					for key in localdmatch:
+						if first:
+							group = None
+							first = False
+						else:
+							group = radio
+						radio = gtk.RadioButton(group, key)
+						radio.connect('toggled', self.rtoggled)
+						self.vbox2.pack_start(radio, True, True, 0)
+						radio.show()
+
+					button3 = gtk.Button('Confirm')
+					self.vbox2.pack_end(button3, True, True, 10)
 					
-					radio = gtk.RadioButton(None, 'Radio Button 1 XD')
-					radio.connect('toggled', self.rtoggled, 1)
-					radio.set_active(True)
-
-					self.vbox.pack_start(radio, True, True, 0)
-					radio.show()
-  
-					radio = gtk.RadioButton(radio, 'Radio button 2')
-					radio.connect('toggled', self.rtoggled, 2)
-					radio.set_active(False)
-
-					self.vbox.pack_start(radio, True, True, 0)
-					radio.show()
-
-					frame.add(self.vbox)
+					button3.connect('clicked', self.OnButton3, self.choosedialog)
+					
+					frame.add(self.vbox2)
 					self.choosedialog.add(frame)
 
 					self.choosedialog.show_all ()
-				print(self.dmatch, self.dsize)
 			else:
 				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "No apk theme selected")
 				md.run()
 				md.destroy()
 				widget.set_active(False)
+				
+		print(self.dmatch, self.dsize)
+				
 	def OnButton1(self, widget):
 		if self.dmatch and self.dsize:
 			for key in self.dsize:
@@ -560,10 +576,16 @@ class MyWindow(gtk.Window):
 				subprocess.call(['convert', key, '-resize', str(self.dsize[key][0])+'x'+str(self.dsize[key][1]), tempdir+'/apkmodder-match/'+ob.group(1)])
 				self.zinput.write(tempdir+'/apkmodder-match/'+ob.group(1), 'res/'+ob.group(1))
 			self.zinput.close()
-	def OnButton2(self):
+	def OnButton2(self, a):
 		self.dmatch={}
 		self.dsize={}
 
+	def OnButton3(self, a, window):
+		if not self.target == '':
+			self.dmatch[self.target]=self.imagen
+			self.dsize[self.target]=GetImageSize(self.imagen)
+			window.destroy()
+			print(self.dmatch, self.dsize)
 
 #zz = zipfile.ZipFile('/home/marco/workspace/Nfc.zip', 'a')
 #lfile = GetZipFileName(zz)
