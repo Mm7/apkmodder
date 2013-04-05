@@ -62,36 +62,36 @@ def GetImageSize(path):
 	x, y = image.size
 	return(x, y)
 
-def GetZipDrawableFileName(limage, drawable):
-	limageindir	= []
-	for image in limage:
-		if drawable in image:
-			limageindir.append(image)
-	return(limageindir)
+#def GetZipDrawableFileName(limage, drawable):
+#	limageindir	= []
+#	for image in limage:
+#		if drawable in image:
+#			limageindir.append(image)
+#	return(limageindir)
 
-def GetZipDrawableName(lfile):
-	ldrawable = []	
-	for directory in lfile:
-		if 'drawable' in directory:
-			ldsplit = directory.split('/')
-			for ldsplit in ldsplit:
-				if 'drawable' in ldsplit:
-					if (ldrawable.__contains__(ldsplit)) is False:							
-						ldrawable.append(ldsplit)
-	return(ldrawable)
+#def GetZipDrawableName(lfile):
+#	ldrawable = []	
+#	for directory in lfile:
+#		if 'drawable' in directory:
+#			ldsplit = directory.split('/')
+#			for ldsplit in ldsplit:
+#				if 'drawable' in ldsplit:
+#					if (ldrawable.__contains__(ldsplit)) is False:							
+#						ldrawable.append(ldsplit)
+#	return(ldrawable)
 
-def GetZipImageName(lfile):
-	limage = []
-	for image in lfile:
-		if image.endswith('.png') or image.endswith('.jpg'):
-			limage.append(image)
-	return(limage)
+#def GetZipImageName(lfile):
+	#limage = []
+	#for image in lfile:
+		#if image.endswith('.png') or image.endswith('.jpg'):
+			#limage.append(image)
+	#return(limage)
 
-def ZipWrite(zz, filepath, directory=None):
-	if directory:
-		zz.write(filepath, directory+'/'+(os.path.basename(filepath)))		
-	else:	
-		zz.write(os.path.basename(filepath))
+#def ZipWrite(zz, filepath, directory=None):
+	#if directory:
+		#zz.write(filepath, directory+'/'+(os.path.basename(filepath)))		
+	#else:	
+		#zz.write(os.path.basename(filepath))
 
 class MyWindow(gtk.Window):
 
@@ -556,6 +556,11 @@ class MyWindow(gtk.Window):
 					self.choosedialog.add(frame)
 
 					self.choosedialog.show_all ()
+				elif len(localdmatch) == 0:
+					md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "No match for the selected .png")
+					md.run()
+					md.destroy()
+					widget.set_active(False)
 			else:
 				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "No apk theme selected")
 				md.run()
