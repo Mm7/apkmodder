@@ -62,37 +62,6 @@ def GetImageSize(path):
 	x, y = image.size
 	return(x, y)
 
-#def GetZipDrawableFileName(limage, drawable):
-#	limageindir	= []
-#	for image in limage:
-#		if drawable in image:
-#			limageindir.append(image)
-#	return(limageindir)
-
-#def GetZipDrawableName(lfile):
-#	ldrawable = []	
-#	for directory in lfile:
-#		if 'drawable' in directory:
-#			ldsplit = directory.split('/')
-#			for ldsplit in ldsplit:
-#				if 'drawable' in ldsplit:
-#					if (ldrawable.__contains__(ldsplit)) is False:							
-#						ldrawable.append(ldsplit)
-#	return(ldrawable)
-
-#def GetZipImageName(lfile):
-	#limage = []
-	#for image in lfile:
-		#if image.endswith('.png') or image.endswith('.jpg'):
-			#limage.append(image)
-	#return(limage)
-
-#def ZipWrite(zz, filepath, directory=None):
-	#if directory:
-		#zz.write(filepath, directory+'/'+(os.path.basename(filepath)))		
-	#else:	
-		#zz.write(os.path.basename(filepath))
-
 class MyWindow(gtk.Window):
 
 	apki = False
