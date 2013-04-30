@@ -202,6 +202,9 @@ class MyWindow(gtk.Window):
 			shutil.rmtree(tempdir+'/apkmodder-mod')
 		if os.path.exists(tempdir+'/apkmodder-match'):
 			shutil.rmtree(tempdir+'/apkmodder-match')
+		if hasattr(self, 'output_apk'):
+			self.output_apk.close()
+			os.rename(tempdir+'/apkmodder-mod/output_apk.apk', '/home/marco/output.apk')
 		gtk.main_quit()
 
 	def changed_cbI(self, combobox):
@@ -548,8 +551,26 @@ class MyWindow(gtk.Window):
 				if not os.path.exists(tempdir+'/apkmodder-match/'+os.path.dirname(ob.group(1))):
 					os.makedirs(tempdir+'/apkmodder-match/'+os.path.dirname(ob.group(1)))
 				subprocess.call(['convert', key, '-resize', str(self.dsize[key][0])+'x'+str(self.dsize[key][1]), tempdir+'/apkmodder-match/'+ob.group(1)])
-				self.zinput.write(tempdir+'/apkmodder-match/'+ob.group(1), 'res/'+ob.group(1))
-			self.zinput.close()
+				
+				self.output_apk=zipfile.ZipFile(tempdir+'/apkmodder-mod/output.apk', 'w')
+				
+				for root, dirs, files in os.walk(tempdir+'/apkmodder-mod'):
+					for f in files:
+						try: 
+							ob = re.match(tempdir+'/apkmodder-mod/(.+)', root, re.M|re.I)
+							ob.group(1)
+							a = True
+						except:
+							a = False
+						if 'output.apk' in f:
+							continue
+						if a:
+							self.output_apk.write(root+'/'+f, ob.group(1)+'/'+f)
+						elif not a:
+							self.output_apk.write(root+'/'+f, f)
+						
+			#self.zinput.write(tempdir+'/apkmodder-match/'+ob.group(1), 'res/'+ob.group(1))
+			#self.zinput.close()
 	def OnButton2(self, a):
 		self.dmatch={}
 		self.dsize={}
