@@ -4,9 +4,15 @@
 #  Welcome to MM7 Android Application Modder
 #
 
+print('+--------------------+')
+print('|    APK MODDER      |')
+print('+--------------------+')
 print('')
-print('APK MODDER')
+print('--> CANDIDATE TO ALFA 1 <--')
+print(' Unstable version')
 print('')
+print('## All credits to mm7 (creator) and libs developer ##')
+print('Source: https://github.com/Mm7/apkmodder')
 
 try:
 	import sys
@@ -83,12 +89,6 @@ class MyWindow(gtk.Window):
 
 		agr = gtk.AccelGroup()
 		self.add_accel_group(agr)
-
-		newi = gtk.ImageMenuItem(gtk.STOCK_NEW, agr)
-		key, mod = gtk.accelerator_parse("<Control>N")
-		newi.add_accelerator("activate", agr, key, 
-    	mod, gtk.ACCEL_VISIBLE)
-		filemenu.append(newi)
 
 		openi = gtk.MenuItem(label = 'Open mod apk')
 		key, mod = gtk.accelerator_parse("<Control>I")
@@ -180,8 +180,8 @@ class MyWindow(gtk.Window):
 
 		hbox3 = gtk.HBox(False, 10)
 
-		button1 = gtk.Button(label="Button 1")
-		button2 = gtk.Button(label="Button 2")
+		button1 = gtk.Button(stock=gtk.STOCK_APPLY)
+		button2 = gtk.Button(stock=gtk.STOCK_CANCEL)
 
 		hbox3.pack_end(button1, False, False, 0)		
 		hbox3.pack_end(button2, False, False, 0)
@@ -204,10 +204,14 @@ class MyWindow(gtk.Window):
 			shutil.rmtree(tempdir+'/apkmodder-match')
 		if hasattr(self, 'output_apk'):
 			self.output_apk.close()
-			os.rename(tempdir+'output.apk', '/home/marco/output.apk')
+			os.remove(self.pathi)
+			os.rename(tempdir+'output.apk', self.pathi)
 		gtk.main_quit()
 
 	def changed_cbI(self, combobox):
+		if not hasattr(self, 'firstI'):
+			self.firstI=True
+			return
 		model = combobox.get_model()	
 		index = combobox.get_active()
 		for imageob in self.liimageob:
@@ -226,6 +230,9 @@ class MyWindow(gtk.Window):
 			self.DrawI(lpass)	
 
 	def changed_cbO(self, combobox):
+		if not hasattr(self, 'firstO'):
+			self.firstO=True
+			return
 		model = combobox.get_model()	
 		index = combobox.get_active()
 		for imageob in self.loimageob:
@@ -259,6 +266,11 @@ class MyWindow(gtk.Window):
 			dialog.set_default_response(gtk.RESPONSE_OK)
 			response = dialog.run()
 			self.pathi = dialog.get_filename()
+		
+			if self.pathi == None:
+				dialog.destroy()
+				return
+			
 			dialog.destroy()
 			self.apki = True
 			self.zinput = zipfile.ZipFile(self.pathi, 'a')
@@ -267,7 +279,7 @@ class MyWindow(gtk.Window):
 			self.liimage=[]
 			self.lidrawable=[]
 			self.diimagedir={}
-			
+			 
 			self.zinput.extractall(tempdir+'/apkmodder-mod')
 
 			for root, dirs, files in os.walk(tempdir+'/apkmodder-mod/res'):
@@ -285,6 +297,7 @@ class MyWindow(gtk.Window):
 			
 			for di in self.lidrawable:
 				self.combobox1.append_text(di)
+				self.combobox1.set_active(0)
 				#self.lidrawable.append(di)
 			
 			#self.lidrawable = GetZipDrawableName(self.lifile)			
@@ -335,6 +348,11 @@ class MyWindow(gtk.Window):
 			dialog.set_default_response(gtk.RESPONSE_OK)
 			response = dialog.run()
 			self.patho = dialog.get_filename()
+			
+			if self.patho == None:
+				dialog.destroy()
+				return
+			
 			dialog.destroy()
 			self.apko = True
 			self.zoutput = zipfile.ZipFile(self.patho)
@@ -361,6 +379,7 @@ class MyWindow(gtk.Window):
 			
 			for di in self.lodrawable:
 				self.combobox2.append_text(di)
+				self.combobox2.set_active(0)
 				#self.lidrawable.append(di)
 			
 			#self.lidrawable = GetZipDrawableName(self.lifile)			
@@ -519,7 +538,7 @@ class MyWindow(gtk.Window):
 						self.vbox2.pack_start(radio, True, True, 0)
 						radio.show()
 
-					button3 = gtk.Button('Confirm')
+					button3 = gtk.Button(stock=gtk.STOCK_OK)
 					self.vbox2.pack_end(button3, True, True, 10)
 					
 					button3.connect('clicked', self.OnButton3, self.choosedialog)
@@ -542,7 +561,7 @@ class MyWindow(gtk.Window):
 		print(self.dmatch, self.dsize)
 				
 	def OnButton1(self, widget):
-		if self.dmatch and self.dsize:
+		if hasattr(self, 'dmatch') and hasattr(self, 'dsize'):
 			for key in self.dsize:
 				ob = re.search(tempdir+'/apkmodder-mod/res/(.+)', self.dmatch[key], re.M|re.I)
 				#print(self.dmatch[key])
