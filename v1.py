@@ -205,7 +205,7 @@ class MyWindow(gtk.Window):
 		if hasattr(self, 'output_apk'):
 			self.output_apk.close()
 			os.remove(self.pathi)
-			os.rename(tempdir+'output.apk', self.pathi)
+			shutil.move(tempdir+'/output.apk', self.pathi)
 		gtk.main_quit()
 
 	def changed_cbI(self, combobox):
@@ -573,7 +573,7 @@ class MyWindow(gtk.Window):
 					
 				os.remove(tempdir+'/apkmodder-mod/res/'+ob.group(1))
 				
-				subprocess.call(['convert', key, '-resize', str(self.dsize[key][0])+'x'+str(self.dsize[key][1]), tempdir+'/apkmodder-mod/res/'+ob.group(1)])
+				subprocess.call(['convert', key, '-resize', str(self.dsize[key][0])+'x'+str(self.dsize[key][1])+'!', tempdir+'/apkmodder-mod/res/'+ob.group(1)])
 				
 			self.output_apk=zipfile.ZipFile(tempdir+'/output.apk', 'w')
 				
@@ -590,8 +590,6 @@ class MyWindow(gtk.Window):
 						continue
 					if 'resized' in f:
 						continue
-					
-					print(f)
 					
 					try:
 						print(ob.group(1))
