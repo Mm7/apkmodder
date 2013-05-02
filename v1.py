@@ -8,7 +8,7 @@ print('+--------------------+')
 print('|    APK MODDER      |')
 print('+--------------------+')
 print('')
-print('--> CANDIDATE TO ALFA 1 <--')
+print(' Alfa 1')
 print(' Unstable version')
 print('')
 print('## All credits to mm7 (creator) and libs developer ##')
@@ -499,8 +499,6 @@ class MyWindow(gtk.Window):
 						#print(size)
 						localdmatch[image]=imagen
 						localdsize[image]=size
-
-						print('Match complete')
 						
 				if len(localdmatch) == 1:
 					self.dmatch = dict(self.dmatch.items() + localdmatch.items())
@@ -558,8 +556,6 @@ class MyWindow(gtk.Window):
 				md.destroy()
 				widget.set_active(False)
 				
-		print(self.dmatch, self.dsize)
-				
 	def OnButton1(self, widget):
 		if hasattr(self, 'dmatch') and hasattr(self, 'dsize'):
 			for key in self.dsize:
@@ -590,11 +586,6 @@ class MyWindow(gtk.Window):
 						continue
 					if 'resized' in f:
 						continue
-					
-					try:
-						print(ob.group(1))
-					except:
-						print('no')
 						
 					if a:
 						self.output_apk.write(root+'/'+f, ob.group(1)+'/'+f)
@@ -612,8 +603,6 @@ class MyWindow(gtk.Window):
 			self.dmatch[self.target]=self.imagen
 			self.dsize[self.target]=GetImageSize(self.imagen)
 			window.destroy()
-			
-			print(self.dmatch, self.dsize)
 
 #zz = zipfile.ZipFile('/home/marco/workspace/Nfc.zip', 'a')
 #lfile = GetZipFileName(zz)
