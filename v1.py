@@ -1,18 +1,19 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 
-#  
 #  Welcome to MM7 Android Application Modder
-#
 
+#Print lots information
 print('+--------------------+')
 print('|    APK MODDER      |')
 print('+--------------------+')
 print('')
-print(' Alfa 1')
+print(' Candidate to Alpha 2')
 print(' Unstable version')
 print('')
 print('## All credits to mm7 (creator) and libs developer ##')
 print('Source: https://github.com/Mm7/apkmodder')
+
+#Import libraries
 
 try:
 	import sys
@@ -60,14 +61,100 @@ except:
 	print("FATAL : Can't import subprocess")
 	sys.exit(0)
 
-
+# Get the tempdir of the host system
 tempdir = tempfile.gettempdir()
 
+#Declare some function
+
 def GetImageSize(path):
+	""" Get the image size (in pixels)
+	
+	Arg:
+	    path of image
+	    
+	Return:
+	    tuple of dimensions of image
+	"""
+  
 	image = Image.open(path)
 	x, y = image.size
 	return(x, y)
 
+def GetPath():
+	""" Create a dialog which ask a path
+	  
+	Arg:
+	    None
+	    
+	Return:
+	    Path
+	"""
+	dialog = gtk.FileChooserDialog("Open..", None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+	dialog.set_default_response(gtk.RESPONSE_OK)
+	response = dialog.run()
+	path = dialog.get_filename()
+
+	dialog.destroy()
+	return(path)
+	
+def GetDrawableMod():
+	""" Get name of drawable folders in apk mod
+	
+	Arg:
+	    None
+	    
+	Return:
+	    List of drawable folders
+	"""
+	drawable=[]
+	
+	for root, dirs, files in os.walk(tempdir+'/apkmodder-mod/res'):
+		if root == tempdir+'/apkmodder-mod/res':
+			for rdir in dirs:
+				if re.search(r'drawable-\w+', rdir, re.M|re.I):
+					drawable.append(rdir)
+					
+	return(drawable)
+	
+def GetDrawableFilesMod(drawable):
+	""" Get the corrispondence between drawable directory and the files that contain
+	
+	Arg:
+	    drawables list
+	    
+	Return:
+	    dictionary with corrispondence
+	"""
+
+	d = {}
+	for a in drawable:
+		files = [ f for f in os.listdir(tempdir+'/apkmodder-mod/res/'+a) if os.path.isfile(os.path.join(tempdir+'/apkmodder-mod/res/'+a,f)) ]
+		d[tempdir+'/apkmodder-mod/res/'+a]=files
+		
+	return(d)
+
+def SetCombobox(self, number, text, first):
+	""" Set the combo box
+	
+	Args:
+	    self, number of combobox, text to set, and first (used for active the combobox at open of apk)
+	 
+	Return:
+	    anything
+	"""
+	if (number == 1) and first:
+		self.combobox1.append_text(text)
+		self.combobox1.set_active(0)
+	elif (number == 1) and (not first):
+		self.combobox1.append_text(text)
+	elif (number == 2) and first:
+		self.combobox2.append_text(text)
+		self.combobox2.set_active(0)
+	elif (number == 2) and (not first):
+		self.combobox2.append_text(text)
+	else:
+		print('Bug here, function SetCombobox')
+	
 class MyWindow(gtk.Window):
 
 	apki = False
@@ -256,44 +343,43 @@ class MyWindow(gtk.Window):
 
 
 	def OnOpen(self, a, b):
-		if (b == 0) and (self.apki == False):
-					
-			dialog = gtk.FileChooserDialog("Open..",
-            	                   None,
-            	                   gtk.FILE_CHOOSER_ACTION_OPEN,
-            	                   (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-            	                    gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-			dialog.set_default_response(gtk.RESPONSE_OK)
-			response = dialog.run()
-			self.pathi = dialog.get_filename()
+		""" Open and prepere the apk for drawing to the table
 		
+		Args:
+		    b, stupid value that i'm going to remove :/
+		
+		Return:		
+		    anythings
+		
+		"""
+		if (b == 0) and (self.apki == False):
+			
+			# Get Apk path
+			self.pathi = GetPath() 
+			
+			# Check if the path exsist, if not exsist break
 			if self.pathi == None:
-				dialog.destroy()
 				return
 			
-			dialog.destroy()
+			# Create lots variable
 			self.apki = True
 			self.zinput = zipfile.ZipFile(self.pathi, 'a')
 			self.lidir=[]
-			self.lifile=[]
 			self.liimage=[]
 			self.lidrawable=[]
 			self.diimagedir={}
-			 
-			self.zinput.extractall(tempdir+'/apkmodder-mod')
+			 			 
+			 # Extract the apk to tempdir+/apkmodder-mod
+			self.zinput.extractall(tempdir+'/apkmodder-mod') 
 
-			for root, dirs, files in os.walk(tempdir+'/apkmodder-mod/res'):
-				if root == tempdir+'/apkmodder-mod/res':
-					for rdir in dirs:
-						if re.search(r'drawable-\w+', rdir, re.M|re.I):
-							self.lidrawable.append(rdir)
-							#self.dimagedir[tempdir+'/apkmoddertmp/res/'+rdir]='Void'
-				for d in self.lidrawable:
-					if root == tempdir+'/apkmodder-mod/res/'+d:
-						self.diimagedir[root] = files
-				#self.dimagedir[root] = files
-				#self.lidir.append(dirs)
-				self.lifile = self.lifile+files
+			# Get drawables folders names
+			self.lidrawable = GetDrawableMod()
+			
+			# Get corrispondence between drawables folders and files that contain
+			self.diimagedir = GetDrawableFilesMod(self.lidrawable)
+			
+			for text in self.lidrawable:
+				SetCombobox(self, 1, text, True)
 			
 			for di in self.lidrawable:
 				self.combobox1.append_text(di)
