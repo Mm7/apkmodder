@@ -285,13 +285,13 @@ class MyWindow(gtk.Window):
 
 		# Create a combobox, connect it to a function and append to box
 		self.combobox1 = gtk.combo_box_new_text()	
-		self.combobox1.connect('changed', self.changed_cbI)	
+		self.combobox1.connect('changed', self.OnChangeCB, 1)	
 
 		hbox1.pack_start(self.combobox1, False, False, 0)
 
 		# Create a combobox, connect it to a function and append to box
 		self.combobox2 = gtk.combo_box_new_text()	
-		self.combobox2.connect('changed', self.changed_cbO)	
+		self.combobox2.connect('changed', self.OnChangeCB, 2)	
 
 		hbox1.pack_start(self.combobox2, False, False, 0)
 		
@@ -407,47 +407,72 @@ class MyWindow(gtk.Window):
 		# Destory all and close program
 		gtk.main_quit()
 
-	def changed_cbI(self, combobox):
-		if not hasattr(self, 'firstI'):
+	def OnChangeCB(self, combobox, number):
+		""" When ComboBox is modified set up new image
+		
+		Args:
+		    self, combobox, number (mod-theme)
+		    
+		Return:
+		    anything
+		"""
+		
+		# Check if is first using, if yes break
+		if not hasattr(self, 'firstI') and number == 1:
 			self.firstI=True
 			return
-		model = combobox.get_model()	
-		index = combobox.get_active()
-		for imageob in self.liimageob:
-			self.table1.remove(imageob)
-		for checkbutton in self.lcheckbuttonob:
-			self.table1.remove(checkbutton)
-		if index:
-			limage=self.diimagedir[tempdir+'/apkmodder-mod/res/'+model[index][0]]
-			lpass=[]
-			for image in limage:
-				lpass.append(tempdir+'/apkmodder-mod/res/'+model[index][0]+'/'+image)
-			lpass.sort()
-		#if index:
-		#	ldirfname = GetZipDrawableFileName(self.liimage, model[index][0])
-		#	ldirfname.sort()
-			self.DrawI(lpass)	
-
-	def changed_cbO(self, combobox):
-		if not hasattr(self, 'firstO'):
+			
+		if not hasattr(self, 'firstO') and number == 2:
 			self.firstO=True
 			return
+			
+		# Get index
 		model = combobox.get_model()	
 		index = combobox.get_active()
-		for imageob in self.loimageob:
-			self.table2.remove(imageob)
-		for label in self.llabelob:
-			self.table2.remove(label)
-		if index:
+		
+		if number == 1:
+			# Remove all images
+			for imageob in self.liimageob:
+				self.table1.remove(imageob)
+		
+			# Remove all checkbuttons
+			for checkbutton in self.lcheckbuttonob:
+				self.table1.remove(checkbutton)
 			
-			limage=self.doimagedir[tempdir+'/apkmodder-theme/res/'+model[index][0]]
-			lpass=[]
-			for image in limage:
-				lpass.append(tempdir+'/apkmodder-theme/res/'+model[index][0]+'/'+image)
-			lpass.sort()
-			#ldirfname = GetZipDrawableFileName(self.loimage, model[index][0])
-			#ldirfname.sort()
-			self.DrawO(lpass)
+			if index:
+				# Get the list of images to draw
+				limage=self.diimagedir[tempdir+'/apkmodder-mod/res/'+model[index][0]]
+				lpass=[]
+				
+				# Create list of image to draw
+				for image in limage:
+					lpass.append(tempdir+'/apkmodder-mod/res/'+model[index][0]+'/'+image)
+					lpass.sort()
+				
+				# Draw
+				self.DrawI(lpass)	
+					
+		elif number == 2:	
+			# Remove all images
+			for imageob in self.loimageob:
+				self.table2.remove(imageob)
+				
+			# Remove all labels
+			for label in self.llabelob:
+				self.table2.remove(label)
+
+			if index:
+				# Get the list of images to draw
+				limage=self.doimagedir[tempdir+'/apkmodder-theme/res/'+model[index][0]]
+				lpass=[]
+				
+				# Create list of image to draw
+				for image in limage:
+					lpass.append(tempdir+'/apkmodder-theme/res/'+model[index][0]+'/'+image)
+					lpass.sort()
+			
+				# Draw
+				self.DrawO(lpass)
 			
 	def rtoggled(self, widget):
 		if widget.get_active():
