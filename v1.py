@@ -128,7 +128,7 @@ def GetDrawableFilesMod(drawable):
 
 	d = {}
 	for a in drawable:
-		files = [ f for f in os.listdir(tempdir+'/apkmodder-mod/res/'+a) if os.path.isfile(os.path.join(tempdir+'/apkmodder-mod/res/'+a,f)) ]
+		files = [ f for f in os.listdir(tempdir+'/apkmodder-mod/res/'+a) if (os.path.isfile(os.path.join(tempdir+'/apkmodder-mod/res/'+a,f))) and (os.path.splitext(os.path.join(tempdir+'/apkmodder-mod/res/'+a,f))[1] == '.png') ]
 		d[tempdir+'/apkmodder-mod/res/'+a]=files
 		
 	return(d)
@@ -152,9 +152,40 @@ def SetCombobox(self, number, text, first):
 		self.combobox2.set_active(0)
 	elif (number == 2) and (not first):
 		self.combobox2.append_text(text)
-	else:
-		print('Bug here, function SetCombobox')
+		
+def ResizeToDraw(diz):
+	""" Resize image for prepering the draw
 	
+	Arg:
+	    dictionary with corrispondence between image and dirs
+	    
+	Return:
+	    anything
+	"""
+	for key in diz:
+		for value in diz[key]:
+			subprocess.call(['convert',key+'/'+value, '-resize', '50x50', key+'/'+value+'resized.png'])	
+			
+def GetImageToDraw(diz, dirs, number):
+	""" Get a list of image in a particular drawable
+	
+	Args:
+	    dictionary with corrispondence between image and dirs, drawable (string like drawable-mdpi), number 1 or 2 for mod or theme.
+	    
+	Return:
+	    list of image
+	"""
+	limage = []
+	if number == 1:
+		for value in diz[tempdir+'/apkmodder-mod/res/'+dirs]:
+			limage.append(tempdir+'/apkmodder-mod/res/'+dirs+'/'+value)
+			limage.sort()
+	if number == 2:
+		for value in diz[tempdir+'/apkmodder-theme/res/'+dirs]:
+			limage.append(tempdir+'/apkmodder-theme/res/'+dirs+'/'+value)
+			limage.sort()
+	return(limage)	
+
 class MyWindow(gtk.Window):
 
 	apki = False
@@ -181,7 +212,7 @@ class MyWindow(gtk.Window):
 		key, mod = gtk.accelerator_parse("<Control>I")
 		openi.add_accelerator("activate", agr, key, 
     	mod, gtk.ACCEL_VISIBLE)
-		openi.connect('activate', self.OnOpen, 0)
+		openi.connect('activate', self.OnOpenI)
 
 		filemenu.append(openi)
 
@@ -189,7 +220,7 @@ class MyWindow(gtk.Window):
 		key, mod = gtk.accelerator_parse("<Control>O")
 		openm.add_accelerator("activate", agr, key, 
     	mod, gtk.ACCEL_VISIBLE)
-		openm.connect('activate', self.OnOpen, 1)
+		openm.connect('activate', self.OnOpenO)
 
 		filemenu.append(openm)
 
@@ -342,17 +373,17 @@ class MyWindow(gtk.Window):
 			self.target = widget.get_label()
 
 
-	def OnOpen(self, a, b):
+	def OnOpenI(self, a):
 		""" Open and prepere the apk for drawing to the table
 		
 		Args:
-		    b, stupid value that i'm going to remove :/
+		    self
 		
 		Return:		
-		    anythings
+		    anything
 		
 		"""
-		if (b == 0) and (self.apki == False):
+		if self.apki == False:
 			
 			# Get Apk path
 			self.pathi = GetPath() 
@@ -364,8 +395,6 @@ class MyWindow(gtk.Window):
 			# Create lots variable
 			self.apki = True
 			self.zinput = zipfile.ZipFile(self.pathi, 'a')
-			self.lidir=[]
-			self.liimage=[]
 			self.lidrawable=[]
 			self.diimagedir={}
 			 			 
@@ -378,54 +407,32 @@ class MyWindow(gtk.Window):
 			# Get corrispondence between drawables folders and files that contain
 			self.diimagedir = GetDrawableFilesMod(self.lidrawable)
 			
+			# Set combobox
 			for text in self.lidrawable:
 				SetCombobox(self, 1, text, True)
 			
-			for di in self.lidrawable:
-				self.combobox1.append_text(di)
-				self.combobox1.set_active(0)
-				#self.lidrawable.append(di)
-			
-			#self.lidrawable = GetZipDrawableName(self.lifile)			
-			#for dirdrawable in self.lidrawable:
-			#	self.combobox1.append_text(dirdrawable)
+			# Remove the inital image (No Apk Selected)
 			self.table1.remove(self.image1)
-			#self.liimage = GetZipImageName(self.lifile)
-			for key in self.diimagedir:
-				for value in self.diimagedir[key]:
-					if os.path.splitext(value)[1] == '.png':
-						self.liimage.append(key+'/'+value)
-			#for f in self.lifile:
-			#	if os.path.splitext(f)[1] == '.png':
-			#		self.liimage.append(f)
-					
-			#for key in self.diimagedir:
-			#	for value in self.diimagedir[key]:
-					#subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!', tempdir+'/apkmoddertmp/'+image+'resized.png'])
-			for image in self.liimage:
-				subprocess.call(['convert',image, '-resize', '50x50', image+'resized.png'])	
 			
-			limagestart=[]
-			for value in self.diimagedir[tempdir+'/apkmodder-mod/res/'+self.lidrawable[0]]:
-				limagestart.append(tempdir+'/apkmodder-mod/res/'+self.lidrawable[0]+'/'+value)
-				limagestart.sort()
-				#im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
-				#im2 = im1.thumbnail(dim, Image.NEAREST)	
-				#im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
-			#print(self.lidrawable)
-			#Extract(self.zinput)
-			#Resize(self.liimage)
-			#lidirfname = GetZipDrawableFileName(self.liimage, self.lidrawable[0])
+			# Resize the images		
+			ResizeToDraw(self.diimagedir)
+			
+			# Create a list of image to pass to function Draw
+			limagestart = GetImageToDraw(self.diimagedir, self.lidrawable[0], 1)
+			
+			# Draw image to table
 			self.DrawI(limagestart)
-
-		elif (b == 0) and (self.apki == True):		
+	
+		elif self.apki == True:		
 			md = gtk.MessageDialog(self, 
 				gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, 
 				gtk.BUTTONS_CLOSE, "File already selected")
 			md.run()
 			md.destroy()
-
-		elif (b == 1) and (self.apko == False):
+			
+	def OnOpenO(self, a):
+	
+		if self.apko == False:
 			dialog = gtk.FileChooserDialog("Open..",
             	                   None,
             	                   gtk.FILE_CHOOSER_ACTION_OPEN,
@@ -500,7 +507,7 @@ class MyWindow(gtk.Window):
 			#lidirfname = GetZipDrawableFileName(self.liimage, self.lidrawable[0])
 			self.DrawO(limagestart)
 
-		elif (b == 1) and (self.apko == True):
+		elif self.apko == True:
 			md = gtk.MessageDialog(self, 
 				gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, 
 				gtk.BUTTONS_CLOSE, "File already selected")
