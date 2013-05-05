@@ -97,40 +97,49 @@ def GetPath():
 	dialog.destroy()
 	return(path)
 	
-def GetDrawableMod():
+def GetDrawable(number):
 	""" Get name of drawable folders in apk mod
 	
 	Arg:
-	    None
+	    number: mod or theme
 	    
 	Return:
 	    List of drawable folders
 	"""
 	drawable=[]
 	
-	for root, dirs, files in os.walk(tempdir+'/apkmodder-mod/res'):
-		if root == tempdir+'/apkmodder-mod/res':
-			for rdir in dirs:
-				if re.search(r'drawable-\w+', rdir, re.M|re.I):
-					drawable.append(rdir)
+	if number == 1:
+		for root, dirs, files in os.walk(tempdir+'/apkmodder-mod/res'):
+			if root == tempdir+'/apkmodder-mod/res':
+				drawable = [ rdir for rdir in dirs if re.search(r'drawable-\w+', rdir, re.M|re.I) ]
+	elif number == 2:
+		for root, dirs, files in os.walk(tempdir+'/apkmodder-theme/res'):
+			if root == tempdir+'/apkmodder-theme/res':
+				drawable = [ rdir for rdir in dirs if re.search(r'drawable-\w+', rdir, re.M|re.I) ]
 					
 	return(drawable)
 	
-def GetDrawableFilesMod(drawable):
+def GetDrawableFiles(drawable, number):
 	""" Get the corrispondence between drawable directory and the files that contain
 	
 	Arg:
-	    drawables list
+	    drawables list and number of mod or theme
 	    
 	Return:
 	    dictionary with corrispondence
 	"""
 
 	d = {}
-	for a in drawable:
-		files = [ f for f in os.listdir(tempdir+'/apkmodder-mod/res/'+a) if (os.path.isfile(os.path.join(tempdir+'/apkmodder-mod/res/'+a,f))) and (os.path.splitext(os.path.join(tempdir+'/apkmodder-mod/res/'+a,f))[1] == '.png') ]
-		d[tempdir+'/apkmodder-mod/res/'+a]=files
-		
+	
+	if number == 1:
+		for a in drawable:
+			files = [ f for f in os.listdir(tempdir+'/apkmodder-mod/res/'+a) if (os.path.isfile(os.path.join(tempdir+'/apkmodder-mod/res/'+a,f))) and (os.path.splitext(os.path.join(tempdir+'/apkmodder-mod/res/'+a,f))[1] == '.png') ]
+			d[tempdir+'/apkmodder-mod/res/'+a]=files
+	elif number == 2:
+		for a in drawable:
+			files = [ f for f in os.listdir(tempdir+'/apkmodder-theme/res/'+a) if (os.path.isfile(os.path.join(tempdir+'/apkmodder-theme/res/'+a,f))) and (os.path.splitext(os.path.join(tempdir+'/apkmodder-theme/res/'+a,f))[1] == '.png') ]
+			d[tempdir+'/apkmodder-theme/res/'+a]=files  
+			
 	return(d)
 
 def SetCombobox(self, number, text, first):
@@ -379,7 +388,7 @@ class MyWindow(gtk.Window):
 		Args:
 		    self
 		
-		Return:		
+		Return:
 		    anything
 		
 		"""
@@ -402,10 +411,10 @@ class MyWindow(gtk.Window):
 			self.zinput.extractall(tempdir+'/apkmodder-mod') 
 
 			# Get drawables folders names
-			self.lidrawable = GetDrawableMod()
+			self.lidrawable = GetDrawable(1)
 			
 			# Get corrispondence between drawables folders and files that contain
-			self.diimagedir = GetDrawableFilesMod(self.lidrawable)
+			self.diimagedir = GetDrawableFiles(self.lidrawable, 1)
 			
 			# Set combobox
 			for text in self.lidrawable:
@@ -431,80 +440,53 @@ class MyWindow(gtk.Window):
 			md.destroy()
 			
 	def OnOpenO(self, a):
+		""" Open and prepere the apk for drawing to the table
+		
+		Args:
+		    self
 	
+		Return:
+		    anything
+		
+		"""
 		if self.apko == False:
-			dialog = gtk.FileChooserDialog("Open..",
-            	                   None,
-            	                   gtk.FILE_CHOOSER_ACTION_OPEN,
-            	                   (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-            	                    gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-			dialog.set_default_response(gtk.RESPONSE_OK)
-			response = dialog.run()
-			self.patho = dialog.get_filename()
+
+			# Get Apk path
+			self.patho = GetPath()
 			
+			# Check if the path exsist, if not exsist break
 			if self.patho == None:
-				dialog.destroy()
 				return
 			
-			dialog.destroy()
+			# Create lots variable
 			self.apko = True
 			self.zoutput = zipfile.ZipFile(self.patho)
-			self.lodir=[]
-			self.lofile=[]
-			self.loimage=[]
 			self.lodrawable=[]
 			self.doimagedir={}
 			
+			# Extract the apk to tempdir+/apkmodder-theme
 			self.zoutput.extractall(tempdir+'/apkmodder-theme')
 
-			for root, dirs, files in os.walk(tempdir+'/apkmodder-theme/res'):
-				if (root == tempdir+'/apkmodder-theme/res'):
-					for rdir in dirs:
-						if re.search(r'drawable-\w+', rdir, re.M|re.I):
-							self.lodrawable.append(rdir)
-							#self.dimagedir[tempdir+'/apkmoddertmp/res/'+rdir]='Void'
-				for d in self.lodrawable:
-					if root == tempdir+'/apkmodder-theme/res/'+d:
-						self.doimagedir[root] = files
-				#self.doimagedir[root] = files
-				#self.lidir.append(dirs)
-				self.lofile = self.lofile+files
+			# Get drawables folders names
+			self.lodrawable = GetDrawable(2)
 			
-			for di in self.lodrawable:
-				self.combobox2.append_text(di)
-				self.combobox2.set_active(0)
-				#self.lidrawable.append(di)
+			# Get corrispondence between drawables folders and files that contain
+			self.doimagedir = GetDrawableFiles(self.lodrawable, 2)
 			
-			#self.lidrawable = GetZipDrawableName(self.lifile)			
-			#for dirdrawable in self.lidrawable:
-			#	self.combobox1.append_text(dirdrawable)
+			# Set combobox
+			for text in self.lodrawable:
+				SetCombobox(self, 2, text, True)
+			
+			# Remove the inital image (No Apk Selected)
 			self.table2.remove(self.image2)
-			#self.liimage = GetZipImageName(self.lifile)
-			for key in self.doimagedir:
-				for value in self.doimagedir[key]:
-					if os.path.splitext(value)[1] == '.png':
-						self.loimage.append(key+'/'+value)
-			#for f in self.lifile:
-			#	if os.path.splitext(f)[1] == '.png':
-			#		self.liimage.append(f)
-					
-			#for key in self.doimagedir:
-			#	for value in self.doimagedir[key]:
-					#subprocess.call(['convert', tempdir+'/apkmoddertmp/'+image, '-resize', '50x50!',tempdir+'/apkmoddertmp/'+image+'resized.png'])
-			for image in self.loimage:
-				subprocess.call(['convert', image, '-resize', '50x50', image+'resized.png'])	
 			
-			limagestart=[]
-			for value in self.doimagedir[tempdir+'/apkmodder-theme/res/'+self.lodrawable[0]]:
-				limagestart.append(tempdir+'/apkmodder-theme/res/'+self.lodrawable[0]+'/'+value)
-				limagestart.sort()
-				#im1 = Image.open(tempdir+'/apkmoddertmp/'+image)
-				#im2 = im1.thumbnail(dim, Image.NEAREST)	
-				#im2.save(tempdir+'/apkmoddertmp/'+image+'resized.png')
-			#print(self.lidrawable)
-			#Extract(self.zinput)
-			#Resize(self.liimage)
-			#lidirfname = GetZipDrawableFileName(self.liimage, self.lidrawable[0])
+			# Resize the images		
+			ResizeToDraw(self.doimagedir)
+			
+			# Create a list of image to pass to function Draw
+			limagestart = GetImageToDraw(self.doimagedir, self.lodrawable[0], 2)
+			
+			# Draw image to table
 			self.DrawO(limagestart)
 
 		elif self.apko == True:
@@ -512,15 +494,7 @@ class MyWindow(gtk.Window):
 				gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, 
 				gtk.BUTTONS_CLOSE, "File already selected")
 			md.run()
-			md.destroy()
-		
-		else:
-			md = gtk.MessageDialog(self, 
-				gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, 
-				gtk.BUTTONS_CLOSE, "Bug here!! : OnOpen Else !!")
-			md.run()
-			md.destroy()
-			sys.exit(0)		
+			md.destroy()	
 
 	def DrawI(self, limage):		
 		a=0
