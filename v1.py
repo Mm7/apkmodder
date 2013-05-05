@@ -195,47 +195,72 @@ def GetImageToDraw(diz, dirs, number):
 			limage.sort()
 	return(limage)	
 
+# Create main class
+	
 class MyWindow(gtk.Window):
 
+	# Creato two booleans, when False apk not opened yet, when True apk opened
 	apki = False
 	apko = False
 
+	# Define constructor
 	def __init__(self):
+		""" Create window layout
+		
+		Arg:
+		    self
+		
+		Return:
+		    anything
+		"""
+		
+		# Create a window
 		gtk.Window.__init__(self)
 
+		# Set window size and position
 		self.set_default_size(1200, 800)		
 		self.set_position(gtk.WIN_POS_CENTER)		
 
+		# Create main box container (vertical)
 		vbox = gtk.VBox(False, 10)	
 
+		# Create the menu bar
 		mb = gtk.MenuBar()
 
+		# Create menu
 		filemenu = gtk.Menu()
 		filem = gtk.MenuItem("_File")
 		filem.set_submenu(filemenu)
 
+		# Create accelerator group
 		agr = gtk.AccelGroup()
 		self.add_accel_group(agr)
 
+		# Create a item and accelerator
 		openi = gtk.MenuItem(label = 'Open mod apk')
 		key, mod = gtk.accelerator_parse("<Control>I")
 		openi.add_accelerator("activate", agr, key, 
     	mod, gtk.ACCEL_VISIBLE)
 		openi.connect('activate', self.OnOpenI)
 
+		# Append to menu
 		filemenu.append(openi)
 
+		# Create a item and accelerator
 		openm = gtk.MenuItem(label = 'Open theme apk')
 		key, mod = gtk.accelerator_parse("<Control>O")
 		openm.add_accelerator("activate", agr, key, 
     	mod, gtk.ACCEL_VISIBLE)
 		openm.connect('activate', self.OnOpenO)
-
+		
+		# Append to menu
 		filemenu.append(openm)
 
+		# Create and append a separator to menu
 		sep = gtk.SeparatorMenuItem()
 		filemenu.append(sep)
 
+		# Create a item and accelerator
 		exit = gtk.ImageMenuItem(gtk.STOCK_QUIT, agr)
 		key, mod = gtk.accelerator_parse("<Control>Q")
 		exit.add_accelerator("activate", agr, key, 
@@ -243,70 +268,94 @@ class MyWindow(gtk.Window):
 
 		exit.connect("activate", self.Close)
 
+		# Append to menu
 		filemenu.append(exit)
 
 		mb.append(filem)
+		
+		#Append menu to box
 		vbox.pack_start(mb, False, False, 5)	
 	
+		# Create a horizontal separator and append
 		hseparator1 = gtk.HSeparator()
-
 		vbox.pack_start(hseparator1, False, False, 0)
 
+		# Create a box (horizontal)
 		hbox1 = gtk.HBox(True, 10)		
 
+		# Create a combobox, connect it to a function and append to box
 		self.combobox1 = gtk.combo_box_new_text()	
 		self.combobox1.connect('changed', self.changed_cbI)	
 
 		hbox1.pack_start(self.combobox1, False, False, 0)
 
+		# Create a combobox, connect it to a function and append to box
 		self.combobox2 = gtk.combo_box_new_text()	
 		self.combobox2.connect('changed', self.changed_cbO)	
 
 		hbox1.pack_start(self.combobox2, False, False, 0)
+		
+		# Append box to main box
 		vbox.pack_start(hbox1, False, False, 0)
 
+		# Create a horizontal separator and append
 		hseparator2 = gtk.HSeparator()
 		vbox.pack_start(hseparator2, False, False, 0)
 
+		# Create a box (horizontal)
 		hbox2 = gtk.HBox(True, 10)		
 
+		# Create a scrolled window, append to box and show
 		scrolled_window1 = gtk.ScrolledWindow()
 		hbox2.pack_start(scrolled_window1, True, True, 0)		
 		scrolled_window1.show()
 		
+		# Create a table
 		self.table1 = gtk.Table(2, 2, True)
 
+		# Create, set, and show a image
 		self.image1 = gtk.Image()
 		self.image1.set_from_file("img.png")	
 		self.image1.show()
 
+		# Append image to table
 		self.table1.attach(self.image1, 0, 2, 0, 2)
 
+		# Append and show table
 		scrolled_window1.add_with_viewport(self.table1)
 		self.table1.show()
 
+		# Create a scrolled window, append to box and show
 		scrolled_window2 = gtk.ScrolledWindow()
 		hbox2.pack_start(scrolled_window2, True, True, 0)		
 		scrolled_window2.show()
 		
+		# Create a table
 		self.table2 = gtk.Table(2, 2, False)
 
+		# Create, set and show a image
 		self.image2 = gtk.Image()
 		self.image2.set_from_file("img.png")	
 		self.image2.show()
 		
+		# Append image to table
 		self.table2.attach(self.image2, 0, 2, 0, 2)
 
+		# Append and show table
 		scrolled_window2.add_with_viewport(self.table2)
 		self.table2.show()
 
+		# Append box to main box
 		vbox.pack_start(hbox2, True, True, 0)
 
+		# Create and append a horizontal separator
 		hseparator3 = gtk.HSeparator()		
 		vbox.pack_start(hseparator3, False, False, 0)
 
+		# Create a box (horizontal)
 		hbox3 = gtk.HBox(False, 10)
 
+		# Create and append two buttons
 		button1 = gtk.Button(stock=gtk.STOCK_APPLY)
 		button2 = gtk.Button(stock=gtk.STOCK_CANCEL)
 
@@ -316,23 +365,46 @@ class MyWindow(gtk.Window):
 		button1.connect("clicked", self.OnButton1)
 		button2.connect("clicked", self.OnButton2)
 		
+		# Append box to main box
 		vbox.pack_start(hbox3, False, False, 0)
 
+		# Add main box to window
 		self.add(vbox)
 
+		# Connect delete event to Close function
 		self.connect("delete-event", self.Close)
 
 	def Close(self, b, c):
+		""" Clean tempdirs and move final apk to target
+		
+		Args:
+		    anything
+		    
+		Return:
+		    anything
+		"""
+		
+		# Clean all tempdirs
 		if os.path.exists(tempdir+'/apkmodder-theme'):
 			shutil.rmtree(tempdir+'/apkmodder-theme')
 		if os.path.exists(tempdir+'/apkmodder-mod'):
 			shutil.rmtree(tempdir+'/apkmodder-mod')
 		if os.path.exists(tempdir+'/apkmodder-match'):
 			shutil.rmtree(tempdir+'/apkmodder-match')
+		
+		# Check if has been created a modded apk
 		if hasattr(self, 'output_apk'):
+		  
+			# Close zip
 			self.output_apk.close()
+			
+			# Remove actual mod apk
 			os.remove(self.pathi)
+			
+			#Substituite old apk (deleted) with the modded apk
 			shutil.move(tempdir+'/output.apk', self.pathi)
+		
+		# Destory all and close program
 		gtk.main_quit()
 
 	def changed_cbI(self, combobox):
