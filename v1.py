@@ -460,6 +460,15 @@ class MyWindow(gtk.Window):
 			self.DrawO(limage)	
 			
 	def rtoggled(self, widget):
+		""" Create a target
+		
+		Args:
+		    self, widget
+		    
+		Return:
+		    anything
+		"""
+		#Create target
 		if widget.get_active():
 			self.target = widget.get_label()
 
@@ -581,13 +590,13 @@ class MyWindow(gtk.Window):
 	def DrawI(self, limage):		
 		a=0
 		b=1
-		c=-1
+		#c=-1
 		self.liimageob = []
 		self.lcheckbuttonob = []
 		self.diob = {}
 		for image in limage:
 			a=a+1
-			c=c+1
+			#c=c+1
 			if a > 3:
 				b=b+2
 				a=1
