@@ -440,17 +440,11 @@ class MyWindow(gtk.Window):
 				self.table1.remove(checkbutton)
 			
 			if index:
-				# Get the list of images to draw
-				limage=self.diimagedir[tempdir+'/apkmodder-mod/res/'+model[index][0]]
-				lpass=[]
+				# Create a list of image to pass to function Draw
+				limage = GetImageToDraw(self.diimagedir, model[index][0], 1)
 				
-				# Create list of image to draw
-				for image in limage:
-					lpass.append(tempdir+'/apkmodder-mod/res/'+model[index][0]+'/'+image)
-					lpass.sort()
-				
-				# Draw
-				self.DrawI(lpass)	
+				# Draw image to table
+				self.DrawI(limage)	
 					
 		elif number == 2:	
 			# Remove all images
@@ -462,17 +456,11 @@ class MyWindow(gtk.Window):
 				self.table2.remove(label)
 
 			if index:
-				# Get the list of images to draw
-				limage=self.doimagedir[tempdir+'/apkmodder-theme/res/'+model[index][0]]
-				lpass=[]
+				# Create a list of image to pass to function Draw
+				limage = GetImageToDraw(self.doimagedir, model[index][0], 2)
 				
-				# Create list of image to draw
-				for image in limage:
-					lpass.append(tempdir+'/apkmodder-theme/res/'+model[index][0]+'/'+image)
-					lpass.sort()
-			
-				# Draw
-				self.DrawO(lpass)
+				# Draw image to table
+				self.DrawO(limage)	
 			
 	def rtoggled(self, widget):
 		if widget.get_active():
