@@ -20,44 +20,81 @@ try:
 except:
 	print("FATAL : Can't import sys O.o Impossible XD")
 try:
-	import gtk
-	import pygtk
-except:
-	print("FATAL : Can't import gtk")
-	sys.exit(0)
-try:
-	import zipfile
-except:
-	print("FATAL : Can't import zipfile")
-	sys.exit(0)
-try:
-	import tempfile
-except:
-	print("FATAL : Can't import tempfile")
-	sys.exit(0)
-try:
 	import os
 except:
 	print("FATAL : Can't import os O.o Impossible XD")
 	sys.exit(0)
 try:
-	import Image
+	import logging
 except:
+	print("FATAL : Can't import logging")
+	sys.exit(0)
+	
+# Inizialize log
+
+if os.path.exists('log'):
+	os.remove('log')
+
+logger = logging.getLogger('myprogram')
+hdlr = logging.FileHandler('log')
+formatter = logging.Formatter('[%(levelname)s] %(message)s')
+ 
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr)
+logger.setLevel(logging.INFO)
+ 
+logger.info('Log system start')
+
+# Import libraries
+
+try:
+	import gtk
+	import pygtk
+	logger.info('Gtk imported')
+except:
+	logger.error("Can't import gtk")
+	print("FATAL : Can't import gtk")
+	sys.exit(0)
+try:
+	import zipfile
+	logger.info('ZipFile imported')
+except:
+	logger.error("Can't import zipfile")
+	print("FATAL : Can't import zipfile")
+	sys.exit(0)
+try:
+	import tempfile
+	logger.info('Tempfile imported')
+except:
+	logger.error("Can't import tempfile")
+	print("FATAL : Can't import tempfile")
+	sys.exit(0)
+try:
+	import Image
+	logger.info('Image imported')
+except:
+	logger.error("Can't import image")
 	print("FATAL : Can't import Image")
 	sys.exit(0)
 try:
 	import shutil
+	logger.info('Shutil imported')
 except:
+	logger.error("Can't import shutil")
 	print("FATAL : Can't import shutil")
 	sys.exit(0)
 try:
 	import re
+	logger.info('Re imported')
 except:
+	logger.error("Can't import re")
 	print("FATAL : Can't import re")
 	sys.exit(0)
 try:
 	import subprocess
+	logger.info('Subprocess imported')
 except:
+	logger.error("Can't import subprocess")
 	print("FATAL : Can't import subprocess")
 	sys.exit(0)
 
@@ -75,7 +112,7 @@ def GetImageSize(path):
 	Return:
 	    tuple of dimensions of image
 	"""
-  
+	
 	image = Image.open(path)
 	x, y = image.size
 	return(x, y)
@@ -490,11 +527,24 @@ class MyWindow(gtk.Window):
 			
 			# Check if the path exsist, if not exsist break
 			if self.pathi == None:
+				logger.error('OnOpenI -> Path empty')
 				return
+			
+			# Check if zip is good
+			try:
+				ztest = zipfile.ZipFile(self.pathi, 'r')
+			except zipfile.BadZipfile:
+				logger.error('OnOpenI -> Bad zipfile')
+				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "Bad zipfile")
+				md.run()
+				md.destroy()
+				return
+			
+			# Create ZipFile object
+			self.zinput = zipfile.ZipFile(self.pathi, 'a')
 			
 			# Create lots variable
 			self.apki = True
-			self.zinput = zipfile.ZipFile(self.pathi, 'a')
 			self.lidrawable=[]
 			self.diimagedir={}
 			 			 
@@ -694,9 +744,7 @@ class MyWindow(gtk.Window):
 				for image in self.loimage:
 					if os.path.basename(imagen) in image+'resize.png':
 						size=GetImageSize(imagen)
-						#print(image)
-						#print(imagen)
-						#print(size)
+
 						localdmatch[image]=imagen
 						localdsize[image]=size
 						
