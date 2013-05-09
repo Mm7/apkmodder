@@ -588,51 +588,93 @@ class MyWindow(gtk.Window):
 			md.destroy()	
 
 	def DrawI(self, limage):		
+		""" Draw a list of image to gtk table
+		
+		Args:
+		    self, list of image
+		    
+		Return:
+		    anything
+		"""
+		
+		# Create 2 variable for create a correct incolunation
 		a=0
 		b=1
-		#c=-1
+		
+		# Create variable for save objects
 		self.liimageob = []
 		self.lcheckbuttonob = []
 		self.diob = {}
+		
 		for image in limage:
+			# Control incolunation
 			a=a+1
-			#c=c+1
 			if a > 3:
 				b=b+2
 				a=1
+				
+			# Create gtk image object, set and show
 			self.image1 = gtk.Image()		
 			self.image1.set_from_file(image+'resized.png')
 			self.image1.show()
+			
+			# Append image object to dict, table and list
 			self.diob[image] = self.image1
 			self.table1.attach(self.image1, a-1, a, b-1, b)
 			self.liimageob.append(self.image1)
+			
+			# Create checkbutton object and show
 			self.checkbutton1 = gtk.CheckButton(os.path.basename(image)) 
 			self.checkbutton1.show()
+			
+			# Connect checkbutton to Match, attach to table and append to list
 			self.checkbutton1.connect('clicked', self.Match, image)
 			self.table1.attach(self.checkbutton1, a-1, a, b, b+1)	
 			self.lcheckbuttonob.append(self.checkbutton1)
 
 	def DrawO(self, limage):
+		""" Draw a list of image to gtk table
+		
+		Args:
+		    self, list of image
+		    
+		Return:
+		    anything
+		"""
+		
+		# Create 2 variable for create a correct incolunation
 		a=0
 		b=1
 		c=-1
+		
+		# Create variable for save objects
 		self.loimageob = []
 		self.llabelob = []
 		self.doob = {}
+		
 		for image in limage:
+			# Control incolunation
 			a=a+1
 			c=c+1
 			if a > 3:
 				b=b+2
 				a=1
+				
+			# Append image object to dict, table and list
 			self.image2 = gtk.Image()		
 			self.image2.set_from_file(image+'resized.png')
 			self.image2.show()
+			
+			# Append image object to dict, table and list
 			self.loimageob.append(self.image2)
 			self.doob[image] = self.image2
 			self.table2.attach(self.image2, a-1, a, b-1, b)
+			
+			# Create label object and show
 			self.label = gtk.Label(os.path.basename(image))
 			self.label.show()
+			
+			# Append to table and to list
 			self.table2.attach(self.label, a-1, a, b, b+1)
 			self.llabelob.append(self.label)
 
@@ -661,10 +703,7 @@ class MyWindow(gtk.Window):
 				if len(localdmatch) == 1:
 					self.dmatch = dict(self.dmatch.items() + localdmatch.items())
 					self.dsize = dict(self.dsize.items() + localdsize.items())
-				#if mok is False:
-				 # print('False')
-				#if any(imagebn in s for s in self.loimage):		
-					#print(GetImageSize(self.loimageob)[0])
+
 				elif len(localdmatch) > 1:
 					self.target=''
 					self.imagen=imagen
@@ -718,9 +757,6 @@ class MyWindow(gtk.Window):
 		if hasattr(self, 'dmatch') and hasattr(self, 'dsize'):
 			for key in self.dsize:
 				ob = re.search(tempdir+'/apkmodder-mod/res/(.+)', self.dmatch[key], re.M|re.I)
-				#print(self.dmatch[key])
-				#print(ob.group(1))
-				#print(key)
 				
 				if not os.path.exists(tempdir+'/apkmodder-match/'+os.path.dirname(ob.group(1))):
 					os.makedirs(tempdir+'/apkmodder-match/'+os.path.dirname(ob.group(1)))
@@ -749,9 +785,7 @@ class MyWindow(gtk.Window):
 						self.output_apk.write(root+'/'+f, ob.group(1)+'/'+f)
 					elif not a:
 						self.output_apk.write(root+'/'+f, f)
-						
-			#self.zinput.write(tempdir+'/apkmodder-match/'+ob.group(1), 'res/'+ob.group(1))
-			#self.zinput.close()
+
 	def OnButton2(self, a):
 		self.dmatch={}
 		self.dsize={}
@@ -761,12 +795,6 @@ class MyWindow(gtk.Window):
 			self.dmatch[self.target]=self.imagen
 			self.dsize[self.target]=GetImageSize(self.imagen)
 			window.destroy()
-
-#zz = zipfile.ZipFile('/home/marco/workspace/Nfc.zip', 'a')
-#lfile = GetZipFileName(zz)
-#ldrawable = GetZipDrawableName(lfile)
-#ZipWrite(zz, '/home/marco/workspace/img.png', 'xd')
-#zz.close()
 
 win = MyWindow()
 win.show_all()
