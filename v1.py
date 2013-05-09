@@ -426,9 +426,8 @@ class MyWindow(gtk.Window):
 			self.firstO=True
 			return
 			
-		# Get index
-		model = combobox.get_model()	
-		index = combobox.get_active()
+		# Get selected text
+		value=combobox.get_active_text()
 		
 		if number == 1:
 			# Remove all images
@@ -439,12 +438,11 @@ class MyWindow(gtk.Window):
 			for checkbutton in self.lcheckbuttonob:
 				self.table1.remove(checkbutton)
 			
-			if index:
-				# Create a list of image to pass to function Draw
-				limage = GetImageToDraw(self.diimagedir, model[index][0], 1)
+			# Create a list of image to pass to function Draw
+			limage = GetImageToDraw(self.diimagedir, value, 1)
 				
-				# Draw image to table
-				self.DrawI(limage)	
+			# Draw image to table
+			self.DrawI(limage)	
 					
 		elif number == 2:	
 			# Remove all images
@@ -455,12 +453,11 @@ class MyWindow(gtk.Window):
 			for label in self.llabelob:
 				self.table2.remove(label)
 
-			if index:
-				# Create a list of image to pass to function Draw
-				limage = GetImageToDraw(self.doimagedir, model[index][0], 2)
+			# Create a list of image to pass to function Draw
+			limage = GetImageToDraw(self.doimagedir, value, 2)
 				
-				# Draw image to table
-				self.DrawO(limage)	
+			# Draw image to table
+			self.DrawO(limage)	
 			
 	def rtoggled(self, widget):
 		if widget.get_active():
