@@ -773,6 +773,7 @@ class MyWindow(gtk.Window):
 					for key in localdmatch:
 						if first:
 							group = None
+							self.target=key
 							first = False
 						else:
 							group = radio
